@@ -53,10 +53,10 @@ namespace MYSQLCPP {
 
         if ((mysql = mysql_init(mysql)) == NULL)
         {
-#ifdef DEBUG
+            #ifdef DEBUG
             DEBUG_ERR(mysql, "MySQLDB::Init():", __FILE__, __LINE__);
-#endif// DEBUG
-            return false;
+            #endif// DEBUG
+                return false;
         }
 
         return true;
@@ -74,7 +74,7 @@ namespace MYSQLCPP {
             mysql_close(mysql);
             mysql = nullptr;
         }
-
+        
         return true;
     }
 
@@ -92,21 +92,21 @@ namespace MYSQLCPP {
 
     //数据连接(不考虑线程安全)
     bool MySQLDB::Connect(const char *host,
-        const char *user,
-        const char *passwd,
-        const char *db,
-        unsigned int port,
-        unsigned long clientflag)
+                          const char *user, 
+                          const char *passwd,
+                          const char *db, 
+                          unsigned int port,
+                          unsigned long clientflag)
     {
-        if (host == nullptr ||
-            user == nullptr ||
-            passwd == nullptr ||
+        if (host == nullptr || 
+            user == nullptr || 
+            passwd == nullptr || 
             db == nullptr
             )
         {
-#ifdef DEBUG
+            #ifdef DEBUG
             DEBUG_ERRINFO(" MySQLDB::Connect paraments error", __FILE__, __LINE__);
-#endif // DEBUG
+            #endif // DEBUG
             return false;
         }
 
@@ -114,20 +114,20 @@ namespace MYSQLCPP {
         {
             if (mysql_init(mysql) == NULL)
             {
-#ifdef DEBUG
+                #ifdef DEBUG
                 DEBUG_ERR(mysql, "MySQLDB::Init():", __FILE__, __LINE__);
-#endif// DEBUG
+                #endif// DEBUG
                 return false;
             }
         }
 
         if (!mysql_real_connect(mysql, host, user, passwd, db, port, 0, clientflag))
         {
-#ifdef DEBUG
+            #ifdef DEBUG
             DEBUG_ERR(mysql, "MySQLDB::Connect error", __FILE__, __LINE__);
-#endif // DEBUG
+            #endif // DEBUG
             return false;
-        }
+         }
 
         return true;
     }
@@ -137,9 +137,9 @@ namespace MYSQLCPP {
     {
         if (mysql_options(mysql, (mysql_option)option, arg))
         {
-#ifdef DEBUG
+            #ifdef DEBUG
             DEBUG_ERR(mysql, "MySQLDB::Options() error:", __FILE__, __LINE__);
-#endif // DEBUG
+            #endif // DEBUG
             return false;
         }
 
@@ -150,7 +150,7 @@ namespace MYSQLCPP {
     bool MySQLDB::setTimeOut(unsigned int nTimeOut)
     {
         Options(DBMYSQL_OPT_CONNECT_TIMEOUT, &nTimeOut);
-
+        
         return true;
     }
 
@@ -162,30 +162,30 @@ namespace MYSQLCPP {
     }
 
     //执行SQL语句接口
-    bool MySQLDB::Query(const char* strSQL)
+    bool MySQLDB::Query(const char* strSQL) 
     {
         if (strSQL == nullptr)
         {
-#ifdef DEBUG
+            #ifdef DEBUG
             DEBUG_ERRINFO("Query() input parament error:", __FILE__, __LINE__);
-#endif // DEBUG
+            #endif // DEBUG
             return false;
         }
 
         if (mysql == nullptr)
         {
-#ifdef DEBUG
+            #ifdef DEBUG
             DEBUG_ERRINFO("Query() mysql == NULL", __FILE__, __LINE__);
-#endif // DEBUG
+            #endif // DEBUG
             return false;
         }
 
         //这里可能有坑，要求传进的都是要以\0结尾的字符串SQL语句
         if (mysql_real_query(mysql, strSQL, (unsigned long)strlen(strSQL)))
         {
-#ifdef DEBUG
+            #ifdef DEBUG
             DEBUG_ERR(mysql, "Query() error:", __FILE__, __LINE__);
-#endif // DEBUG
+            #endif // DEBUG
 
             return false;
         }
@@ -195,18 +195,12 @@ namespace MYSQLCPP {
 
     //取结果集，使用UseResult()时，最好在使用完后FreeResult
     //不保证多线程安全，所以在多线程程序中，要保证不会干扰到上一次的结果集
-    //返回0，取回结果集成功
-    //返回-1，失败
-    //返回1，代表非select语句
-    int MySQLDB::UseResult()
+    bool MySQLDB::UseResult()
     {
         //检查参数mysql和result是否为空
         if (mysql == nullptr)
         {
-#ifdef _DEBUG
-            DEBUG_ERRINFO("mysql == nullptr", __FILE__, __LINE__);
-#endif // _DEBUG 
-            return -1;
+            return false;
         }
 
         if (result != nullptr)
@@ -214,42 +208,25 @@ namespace MYSQLCPP {
             FreeResult();
         }
 
-        result = mysql_store_result(mysql);
+        result = mysql_use_result(mysql);
 
         if (!result)
         {
-            //非SELECT语句
-            if (0 == mysql_field_count(mysql))
-            {
-                return 1;
-            }
-            //SELECT语句
-            else
-            {
-#ifdef _DEBUG
-                DEBUG_ERR(mysql, "mysql_use_result error", __FILE__, __LINE__);
-#endif // _DEBUG    
-                return -1;
-            }
+            #ifdef _DEBUG
+            return false;
+            #endif // _DEBUG    
         }
 
-        return 0;
+        return true;
     }
 
     //取结果集
-    //不保证多线程安全，所以在多线程程序中，要保证不会干扰到上一次的结果集
-    //返回0，取回结果集成功
-    //返回-1，失败
-    //返回1，代表非select语句
-    int MySQLDB::StoreResult()
+    bool MySQLDB::StoreResult()
     {
         //检查参数mysql和result是否为空
         if (mysql == nullptr)
         {
-#ifdef _DEBUG
-            DEBUG_ERRINFO("mysql == nullptr", __FILE__, __LINE__);
-#endif // _DEBUG 
-            return -1;
+            return false;
         }
 
         if (result != nullptr)
@@ -261,28 +238,19 @@ namespace MYSQLCPP {
 
         if (!result)
         {
-            //非SELECT语句
-            if (0 == mysql_field_count(mysql))
-            {
-                return 1;
-            }
-            //SELECT语句
-            else
-            {
-#ifdef _DEBUG
-                DEBUG_ERR(mysql, "mysql_store_result error", __FILE__, __LINE__);
-#endif // _DEBUG    
-                return -1;
-            }
+            #ifdef _DEBUG
+            return false;
+            #endif // _DEBUG    
         }
 
-        return 0;
+        return true;
     }
 
     //取一行结果
-    // vRow最好是reserve一个足够大的空间再传入，可以避免频繁分配内存空间导致效率低下
-    //返回：true 取到row；false 没有查询到数据 或者出错
-    bool MySQLDB::FetchRow(Row &vRow)
+    //返回0，代表成功取到ROW
+    //返回-1，失败
+    //返回1，代表非select语句，有几条语句生效会放在vRow[0]中
+    int MySQLDB::FetchRow(Row &vRow)
     {
         //检查参数result是否为空
         if (result == nullptr)
@@ -290,9 +258,10 @@ namespace MYSQLCPP {
             return -1;
         }
 
-        MYSQL_ROW row = nullptr;
+        MYSQL_ROW row;
         row = mysql_fetch_row(result);
-
+        
+        //SELECT语句 成功取到一行数据 ROW
         if (row)
         {
             int nNum = mysql_num_fields(result);
@@ -302,56 +271,87 @@ namespace MYSQLCPP {
                 vRow.push_back(string(row[i]));
             }
 
-            return true;
+            return 0;
         }
+        //取回失败，或是 非SELECT语句
         else
         {
-            return false;
+            //非SELECT语句
+            if (0 == mysql_field_count(mysql))
+            {
+                int i = (unsigned long)mysql_affected_rows(mysql);
+                vRow.push_back(to_string(i));
+
+                return 1;
+            }
+            // 取回一行数据出错
+            else
+            {
+                #ifdef DEBUG
+                DEBUG_ERR(mysql, "mysql_fetch_row error", __FILE__, __LINE__);
+                #endif // DEBUG   
+                return -1;
+            }
         }
     }
 
-
+    
     //极简接口，直接取回结果
-    // 返回：
-    //      若返回的vector大小为零，要么出错，要么是没有数据返回。
-    Rows MySQLDB::FetchRows()
+    // rtn最好是reserve一个足够大的空间再传入，可以避免频繁分配内存空间导致效率低下
+    //取一行结果
+    //返回0，代表成功取到ROW
+    //返回-1，失败
+    //返回1，代表非select语句，有几条语句生效会放在vRow[0]中
+    int MySQLDB::FetchRows(Rows &rtn)
     {
-        Rows rtn;
         //检查参数result是否为空
         if (result == nullptr)
         {
-            return rtn;
+            return -1;
         }
 
         MYSQL_ROW row;
-
-        //预留足够的空间
-        rtn.reserve(512);
-
+        
         int nRowNum = mysql_num_rows(result);
 
         for (int i = 0; i < nRowNum; ++i)
         {
             row = mysql_fetch_row(result);
 
-            //取回成功
+            //SELECT语句 成功取到一行数据 ROW
             if (row)
             {
                 int nNum = mysql_num_fields(result);
-                vector<string> tmp;
+
                 for (int j = 0; j < nNum; ++j)
-                {  
-                    tmp.push_back(string(row[j]));
+                {
+                    rtn[i].push_back(string(row[j]));
                 }
 
-                rtn.push_back(tmp);
+                return 0;
             }
-            //取回失败，要么是出错，要么是没数据，就不作处理了
-            /*else
+            //取回失败，或是 非SELECT语句
+            else
             {
-            */
+                //非SELECT语句
+                if (0 == mysql_field_count(mysql))
+                {
+                    int k = (unsigned long)mysql_affected_rows(mysql);
+                    rtn[i].push_back(to_string(k));
+
+                    return 1;
+                }
+                // 取回一行数据出错
+                else
+                {
+                    #ifdef DEBUG
+                    DEBUG_ERR(mysql, "mysql_fetch_row error", __FILE__, __LINE__);
+                    #endif // DEBUG   
+                    return -1;
+                }
+            }
         }
-    
+
         return rtn;
     }
 }

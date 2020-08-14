@@ -5,11 +5,8 @@
 struct MYSQL;
 struct MYSQL_RES;
 namespace MYSQLCPP {
-    //多行数据
-    typedef std::vector<std::vector<std::string>> Rows;
-    
-    //一行数据
-    typedef std::vector<std::string> Row;
+    typedef std::vector<std::vector<std::string>> Result;
+
 
     class MYSQLAPI MySQLDB
     {
@@ -44,16 +41,16 @@ namespace MYSQLCPP {
         bool FreeResult();
 
         //取结果集
-        int UseResult();
+        bool UseResult();
 
         //取结果集
-        int StoreResult();
+        bool StoreResult();
 
         //取一行结果
-        bool FetchRow(Row &vRow);
+        int FetchRow(std::vector<std::string> &vRow);
 
         //极简接口，直接取回结果
-        Rows FetchRows();
+        Result FetchRows();
 
     protected:
         MYSQL *mysql = nullptr; //C++11后支持
