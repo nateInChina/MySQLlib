@@ -4,3 +4,13 @@
 
 *.opendb
 project/.vs/MySQLlib/v14/.suo
+*.dll
+*.ilk
+*.pdb
+*.db
+*.obj
+*.log
+*.tlog
+*.idb
+*.filters
+*.vcxproj
