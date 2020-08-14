@@ -1,4 +1,0 @@
-﻿  MysqlDB.cpp
-e:\projectfile\mysqllib\src\mysqldb.cpp(185): warning C4267: “参数”: 从“size_t”转换到“unsigned long”，可能丢失数据
-  MySQLlib.vcxproj -> E:\ProjectFile\MySQLlib\project\MySQLlib\../../lib/MySQLlib.dll
-  MySQLlib.vcxproj -> ../../lib/MySQLlib.pdb (Full PDB)
