@@ -22,6 +22,7 @@ TEST_CASE_METHOD (MYSQLCPP::MySQLDB, "测试MysqlDB init,connect和close，无重连"){
     
     //初始化
     Init();
+    REQUIRE(1 == 1);
 
     REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
     
