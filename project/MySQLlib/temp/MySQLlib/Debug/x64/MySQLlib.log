@@ -1,0 +1,15 @@
+﻿  MysqlDB.cpp
+e:\projectfile\mysqllib\include\mysqldb.h(41): warning C4251: “MYSQLCPP::MySQLDB::vi”: class“std::vector<std::vector<std::string,std::allocator<_Ty>>,std::allocator<std::vector<_Ty,std::allocator<_Ty>>>>”需要有 dll 接口由 class“MYSQLCPP::MySQLDB”的客户端使用
+          with
+          [
+              _Ty=std::string
+          ]
+  e:\projectfile\mysqllib\include\mysqldb.h(41): note: 参见“std::vector<std::vector<std::string,std::allocator<_Ty>>,std::allocator<std::vector<_Ty,std::allocator<_Ty>>>>”的声明
+          with
+          [
+              _Ty=std::string
+          ]
+e:\projectfile\mysqllib\src\mysqldb.cpp(185): warning C4267: “参数”: 从“size_t”转换到“unsigned long”，可能丢失数据
+    正在创建库 ../../lib/MySQLlib.lib 和对象 ../../lib/MySQLlib.exp
+  MySQLlib.vcxproj -> E:\ProjectFile\MySQLlib\project\MySQLlib\../../lib/MySQLlib.dll
+  MySQLlib.vcxproj -> ../../lib/MySQLlib.pdb (Full PDB)
