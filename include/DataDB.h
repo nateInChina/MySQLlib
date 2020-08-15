@@ -54,6 +54,7 @@ namespace MYSQLCPP
         DBMYSQL_OPT_OPTIONAL_RESULTSET_METADATA,
         DBMYSQL_OPT_SSL_FIPS_MODE
     };
+
     enum DBMYSQL_FIELD_TYPE {
         DBMYSQL_TYPE_DECIMAL,
         DBMYSQL_TYPE_TINY,
@@ -90,8 +91,15 @@ namespace MYSQLCPP
 
     struct MYSQLAPI DataDB
     {
-    	
+        DataDB(){}
+        DataDB(const char *val); //对应的列数据类型为：DBMYSQL_TYPE_STRING
+        DataDB(int &&val);         //对应的列数据类型类：DBMYSQL_TYPE_LONG
+        bool LoadFile(const char *path);
+
+        const char *data = nullptr;
+        unsigned long size;
     };
 
+    typedef std::map<std::string, DataDB> DataKeyVal;
 }
 

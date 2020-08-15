@@ -180,7 +180,7 @@ namespace MYSQLCPP {
             return false;
         }
 
-        //这里可能有坑，要求传进的都是要以\0结尾的字符串SQL语句
+        //这里可能有坑，要求传进的都是要以\0结尾的字符串SQL语句,不然strlen会出错
         if (mysql_real_query(mysql, strSQL, (unsigned long)strlen(strSQL)))
         {
 #ifdef DEBUG
@@ -287,7 +287,7 @@ namespace MYSQLCPP {
         //检查参数result是否为空
         if (result == nullptr)
         {
-            return -1;
+            return false;
         }
 
         MYSQL_ROW row = nullptr;
@@ -328,7 +328,7 @@ namespace MYSQLCPP {
         //预留足够的空间
         rtn.reserve(512);
 
-        int nRowNum = mysql_num_rows(result);
+        my_ulonglong nRowNum = mysql_num_rows(result);
 
         for (int i = 0; i < nRowNum; ++i)
         {
@@ -353,5 +353,45 @@ namespace MYSQLCPP {
         }
     
         return rtn;
+    }
+
+    string MySQLDB::GetInsertSql(DataKeyVal val, string TableName)
+    {
+        string sql;
+
+        //INSERT INTO ... (`XXX`, `YYY`) VALUES (xxx, yyy);
+        sql = "INSERT INTO `" + TableName + "`";
+        string key = "";
+        string value = "";
+        for (auto ptr = val.begin(); ptr != val.end(); ++ptr)
+        {
+            key += "`";
+            key += ptr->first;
+            key += "`,";
+
+            value += "'";
+            value += ptr->second.data;
+            value += "',";
+        }
+
+        //去掉最后一个逗号
+        key[key.size() - 1] = ' ';
+        value[value.size() - 1] = ' ';
+
+        sql += "(" + key + ")" + "VALUES (" + value + ");";
+        
+        return sql;
+    }
+    
+    bool MySQLDB::Insert(DataKeyVal val, string TableName)
+    {
+        if (nullptr == mysql || 0 == TableName.size() || 0 == val.size())
+            return false;
+
+        //生成insert sql语句
+        string sql = GetInsertSql(val, TableName);
+       
+
+        return Query(sql.c_str()) ? (mysql_affected_rows(mysql)>0 ? true : false): false;
     }
 }
