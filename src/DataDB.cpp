@@ -68,13 +68,16 @@ namespace MYSQLCPP
         sf.seekg(0, ios::beg);
 
         //为文件内容的大小申请空间
-        char *FileData = new[size];
+        char *FileData = new char[size];
         int read = 0;
 
         while (sf.read(FileData+read, size-read))
         {
             read += sf.gcount();
         }
+
+        sf.close();
+
 
         FILE_TYPE = DBMYSQL_TYPE_BLOB;
         return true;
