@@ -54,14 +54,15 @@ namespace MYSQLCPP {
 
         //极简接口，直接取回结果
         Rows FetchRows();
-    
+        
+        std::string GetInsertSql(DataKeyVal val, std::string TableName);
         bool Insert(DataKeyVal val, std::string TableName);
         bool START_TRANSACTION();
         bool COMMIT();
         bool ROLLBACK();
 
     protected:
-        std::string GetInsertSql(DataKeyVal val, std::string TableName);
+        
         MYSQL *mysql = nullptr; //C++11后支持
         MYSQL_RES *result = nullptr; //C++11后支持
     };

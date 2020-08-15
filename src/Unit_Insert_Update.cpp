@@ -35,10 +35,9 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "测试插入非二进制数据", "[Insert_not_binary]
     DataKeyVal istData;
     
     istData["name"] = DataDB("insert_test");
-    istData["size"] = DataDB(26);
+    istData["size"] = DataDB("26");
 
-
-    Insert(istData, "t_data");
+    CHECK(true == Insert(istData, "t_data"));
 
     //关闭连接
     Close();
@@ -56,6 +55,13 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "测试插入二进制数据", "[Insert_binary]")
     //连接数据库
     REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
 
+    DataKeyVal val;
+    DataDB file;
+    file.LoadFile("mysql.jpg");
+
+    val["name"] = "binary_test";
+    val["size"] = file.size;
+    val["data"] = file;
 
     //关闭连接
     Close();

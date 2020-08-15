@@ -96,6 +96,7 @@ namespace MYSQLCPP
         DataDB(int &&val);         //对应的列数据类型类：DBMYSQL_TYPE_LONG
         bool LoadFile(const char *path);
 
+        DBMYSQL_FIELD_TYPE FILE_TYPE;
         const char *data = nullptr;
         unsigned long size;
     };

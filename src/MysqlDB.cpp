@@ -378,7 +378,7 @@ namespace MYSQLCPP {
         key[key.size() - 1] = ' ';
         value[value.size() - 1] = ' ';
 
-        sql += "(" + key + ")" + "VALUES (" + value + ");";
+        sql += " (" + key + ") VALUES (" + value + ");";
         
         return sql;
     }
@@ -394,4 +394,6 @@ namespace MYSQLCPP {
 
         return Query(sql.c_str()) ? (mysql_affected_rows(mysql)>0 ? true : false): false;
     }
+
+
 }
