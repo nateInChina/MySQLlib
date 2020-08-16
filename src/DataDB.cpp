@@ -39,20 +39,22 @@ namespace MYSQLCPP
         FILE_TYPE = DBMYSQL_TYPE_STRING;
     }
 
-    DataDB::DataDB(int &&val)
+    DataDB::DataDB(int *val)
     {
 
-        data = (char*)&val;
+        data = (const char*)val;
         size = sizeof(int);
         FILE_TYPE = DBMYSQL_TYPE_LONG;
     }
     
+    //将文件内容加载到data中，注意，本接口使用完，要调用Free把申请的空间释放
+    //TODO：利用RAII再将封装这个接口，就不需要使用时小心翼翼了。
     bool DataDB::LoadFile(const char *path)
     {
         if (nullptr == path)
             return false;
 
-        fstream sf(path, iso::in);
+        fstream sf(path, ios::in | ios::binary);
 
         if (!sf)
         {
@@ -63,23 +65,35 @@ namespace MYSQLCPP
         }
  
         sf.seekg(0, ios::end);
-        size = sf.tellg();
+        size = (unsigned long)sf.tellg();
 
         sf.seekg(0, ios::beg);
 
         //为文件内容的大小申请空间
-        char *FileData = new char[size];
+        char *FileData = new char[size]; //一定要记得释放
         int read = 0;
 
-        while (sf.read(FileData+read, size-read))
+        while (!sf.eof())
         {
-            read += sf.gcount();
+            sf.read(FileData + read, size - read);
+            if (sf.gcount() > 0)
+                read += sf.gcount();
+            else
+                break;
         }
 
-        sf.close();
-
-
+        data = FileData;
         FILE_TYPE = DBMYSQL_TYPE_BLOB;
+
+        sf.close();   
+        return true;
+    }
+
+    bool DataDB::Free()
+    {
+        delete[] data;
+        data = nullptr;
+
         return true;
     }
     

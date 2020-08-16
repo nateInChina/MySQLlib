@@ -299,7 +299,10 @@ namespace MYSQLCPP {
 
             for (int i = 0; i < nNum; ++i)
             {
-                vRow.push_back(string(row[i]));
+                DataDB ret;
+                ret.data = row[i];
+                
+                vRow.push_back(ret);
             }
 
             return true;
@@ -395,5 +398,84 @@ namespace MYSQLCPP {
         return Query(sql.c_str()) ? (mysql_affected_rows(mysql)>0 ? true : false): false;
     }
 
+    bool MySQLDB::InsertBin(DataKeyVal val, std::string TableName)
+    {
+        if (nullptr == mysql || 0 == TableName.size() || 0 == val.size())
+            return false;
+        
+        string sql;
 
+        //拼接sql语句
+        //INSERT INTO `t_data` (`XXX`, `YYY`) VALUES (?, ?, ?)
+        sql = "INSERT INTO `" + TableName + "` ";
+        string key;
+        string value;
+
+        int i = 0;
+
+        //一定要初始化
+        //这里可能有坑，只支持100个字段，如果大于100个字段可能就不够用了。
+        //但大于100个字段也少见吧！
+        MYSQL_BIND bind[100] = {0};
+
+        for (auto ptr = val.begin(); ptr != val.end(); ++ptr)
+        {
+            //拼写列的名称
+            key += "`";
+            key += ptr->first;
+            key += "`,";
+
+            //拼写列的值，只不过在mysql中，二进制值的插入用?代替
+            value += "?,";
+            
+            bind[i].buffer = const_cast<char *>(ptr->second.data);
+            bind[i].buffer_type = (enum_field_types)ptr->second.FILE_TYPE;
+            bind[i].buffer_length = ptr->second.size;
+            i++;
+        }
+
+        //去掉尾部多余的逗号
+        key[key.size() - 1] = ' ';
+        value[value.size() - 1] = ' ';
+
+        sql += "(" + key + ") VALUES (" + value + ");";
+
+        MYSQL_STMT *stmt = mysql_stmt_init(mysql);
+        if (!stmt)
+        {
+            #ifdef DEBUG
+            DEBUG_STMT_ERR(stmt, "mysql_stmt_init eror", __FILE__, __LINE__);
+            #endif // DEBUG
+            return false;
+        }
+
+        if (mysql_stmt_prepare(stmt, sql.c_str(), sql.size()) != 0)
+        {
+            #ifdef DEBUG
+            DEBUG_STMT_ERR(stmt, "mysql_stmt_prepare error", __FILE__, __LINE__);
+            #endif // DEBUG
+            return false;
+        }
+
+        if (mysql_stmt_bind_param(stmt, bind) != 0)
+        {
+            #ifdef DEBUG
+            DEBUG_STMT_ERR(stmt, "mysql_stmt_bind_param error", __FILE__, __LINE__);
+            #endif // DEBUG
+
+            return false;
+        }
+
+        if (mysql_stmt_execute(stmt) != 0)
+        {
+            #ifdef DEBUG
+            DEBUG_STMT_ERR(stmt, "mysql_stmt_execute error", __FILE__, __LINE__);
+            #endif // DEBUG
+
+            return false;
+        }
+
+        mysql_stmt_close(stmt);
+        return true;
+    }
 }

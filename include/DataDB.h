@@ -93,8 +93,9 @@ namespace MYSQLCPP
     {
         DataDB(){}
         DataDB(const char *val); //对应的列数据类型为：DBMYSQL_TYPE_STRING
-        DataDB(int &&val);         //对应的列数据类型类：DBMYSQL_TYPE_LONG
+        DataDB(int *val);         //对应的列数据类型类：DBMYSQL_TYPE_LONG
         bool LoadFile(const char *path);
+        bool Free();
 
         DBMYSQL_FIELD_TYPE FILE_TYPE;
         const char *data = nullptr;

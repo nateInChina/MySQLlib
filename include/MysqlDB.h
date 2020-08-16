@@ -9,7 +9,7 @@ namespace MYSQLCPP {
     typedef std::vector<std::vector<std::string>> Rows;
     
     //一行数据
-    typedef std::vector<std::string> Row;
+    typedef std::vector<DataDB> Row;
 
     class MYSQLAPI MySQLDB
     {
@@ -56,7 +56,11 @@ namespace MYSQLCPP {
         Rows FetchRows();
         
         std::string GetInsertSql(DataKeyVal val, std::string TableName);
+
         bool Insert(DataKeyVal val, std::string TableName);
+
+        bool InsertBin(DataKeyVal val, std::string TableName);
+
         bool START_TRANSACTION();
         bool COMMIT();
         bool ROLLBACK();
