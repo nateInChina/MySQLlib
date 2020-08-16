@@ -6,7 +6,34 @@
 
 using namespace std;
 using namespace MYSQLCPP;
-
+/*
+    测试方法：
+        前提：首次要保证MYSQL服务器打开！！（相关的库、用户名按你自己的安装的数据库来修改下面的代码）
+        下面的例程按顺序标号，称为第1个例程、第2个例程，依此类推
+    
+    第1个例程：
+        测试了StoreResult接口，测试的情景有：
+        非SELECT语句是否能调用成功
+        SELECT语句但没符合的数据时能否调用成功；
+        SELECT语句且有符合的数据时能否调用成功；
+        看结果是否显示PASS即可。
+    第2个例程：
+        和第1个例程一样，只是UseResult取回结果集时，不会马上把数据拿回来，而是返回结果而已，
+        之后需要一条一条地FetchRow/FetchRows回来；这跟StoreResult是不一样的，虽然StoreResult
+        最后也需要一条一条Fetch回来，但是它返回的结果集本身就从服务端把所有数据取回来了，而
+        使用UseResult后的每一条Fetch反而是要从服务器端取回来。
+    第3个例程：
+        测试FetchRow接口，分“有结果集，但没有数据”和“有结果集，且有数据，并取回数据”；
+        在第二个情景里，模拟插入了10条数据，将取回的数据跟这10条的第一条做比作。
+    第4个例程：
+        测试FetchRows接口,FetchRows是可以一次性取回所有行的，所以分以下几种情景测试：
+            1、有结果集，但没数据(没有符合条件的数据)，返回的数据是空的；
+            2、有结果集，且只有一条数据，取回这条数据；
+                模拟插入了一条数据，并将取回的数据跟这条数据作对比。
+            3、有结果集，且有多条数据，取回全部数据；
+                模拟插入了多条数据，并将取回的数据跟取回的数据作对比。
+        
+*/
 TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "测试取回结果集接口StoreResult", "[StoreResult]") {   
     cout << "[INFO]:begin mysql!!" << endl;
     
@@ -206,6 +233,8 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "取回一行数据", "[FetchRow]") {
         tmp.data = "1024";
         Cmp.push_back(tmp);
 
+        FreeResult();
+
         //DataDB要重载运算符== 才能进行比较
         CHECK(Cmp == getData);
 
@@ -327,23 +356,30 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "取回所有数据", "[FetchRows]") {
         CHECK(10 == getData.size());
 
         Rows Cmp;
-        Row nRow;
-        DataDB item;
+        
         string str;
         string name;
         for (int i = 0; i < 10; ++i)
         {
+            Row nRow;
+            DataDB item;
             nRow.clear();
 
             str = to_string(i+1);
-            item.data = str.c_str();
+            char *id = new char[10]{0};
+            memcpy(id, str.c_str(), str.size());
+            item.data = id;
             nRow.push_back(item); //id
 
             name = "test" + to_string(i) + ".jpg";
-            item.data = name.c_str();
+            char *szName = new char[100]{0};
+            memcpy(szName, name.c_str(), name.size());
+            item.data = szName;
             nRow.push_back(item); //name
 
-            item.data = "1024";
+            char *szSize = new char[100]{ 0 };
+            memcpy(szSize, "1024", sizeof("1024"));
+            item.data = szSize;
             nRow.push_back(item);//size
 
             Cmp.push_back(nRow);
@@ -357,10 +393,9 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "取回所有数据", "[FetchRows]") {
             {
                 CHECK(Cmp[i][j] == getData[i][j]);
                 cout << "Cmp: " << Cmp[i][j].data << " == getData: " << getData[i][j].data << endl;
+                delete[] Cmp[i][j].data;
             }
         }
-        
-
     }
 
     //关闭连接
