@@ -296,12 +296,20 @@ namespace MYSQLCPP {
         if (row)
         {
             int nNum = mysql_num_fields(result);
-
+            unsigned long *lengths = mysql_fetch_lengths(result);
             for (int i = 0; i < nNum; ++i)
             {
                 DataDB ret;
+                MYSQL_FIELD *field = mysql_fetch_field_direct(result, i);
+                //读取数据
                 ret.data = row[i];
                 
+                //读取长度
+                ret.size = lengths[i];
+
+                //读取类型
+                ret.FILE_TYPE = (DBMYSQL_FIELD_TYPE)field->type;
+
                 vRow.push_back(ret);
             }
 
@@ -341,10 +349,23 @@ namespace MYSQLCPP {
             if (row)
             {
                 int nNum = mysql_num_fields(result);
-                vector<string> tmp;
+                vector<DataDB> tmp;
+                unsigned long *lengths = mysql_fetch_lengths(result);
                 for (int j = 0; j < nNum; ++j)
                 {  
-                    tmp.push_back(string(row[j]));
+                    DataDB ret;
+                    MYSQL_FIELD *field = mysql_fetch_field_direct(result, j);
+                    
+                    //读取数据
+                    ret.data = row[j];
+
+                    //读取数据长度
+                    ret.size = lengths[j];
+
+                    //读取数据类型
+                    ret.FILE_TYPE = (DBMYSQL_FIELD_TYPE)field->type; 
+                    
+                    tmp.push_back(ret);
                 }
 
                 rtn.push_back(tmp);

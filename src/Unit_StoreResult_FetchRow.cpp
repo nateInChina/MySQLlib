@@ -3,10 +3,10 @@
 #include "MysqlDB.h"
 #include <string>
 #include <iostream>
+
 using namespace std;
 using namespace MYSQLCPP;
 
-#if 0
 TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "测试取回结果集接口StoreResult", "[StoreResult]") {   
     cout << "[INFO]:begin mysql!!" << endl;
     
@@ -205,9 +205,18 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "取回一行数据", "[FetchRow]") {
         Cmp.push_back(tmp);
         tmp.data = "1024";
         Cmp.push_back(tmp);
-        
+
+        //DataDB要重载运算符== 才能进行比较
         CHECK(Cmp == getData);
 
+        //也可以使用下面逐条比较，就可以看到每个字段的内容了
+        //for (int i = 0; i < Cmp.size(); ++i)
+        //{
+        //    CHECK(Cmp[i] == getData[i]);
+        //    
+        //    cout << "Cmp: " << Cmp[i].data << " == getData: " << getData[i].data << endl;
+        //}
+        
     }
 
     //关闭连接
@@ -215,7 +224,6 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "取回一行数据", "[FetchRow]") {
 
     cout << "[INFO]:close mysql!!\n" << endl;
 }
-
 
 TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "取回所有数据", "[FetchRows]") {
     cout << "[INFO]:begin mysql!!\n" << endl;
@@ -319,28 +327,44 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "取回所有数据", "[FetchRows]") {
         CHECK(10 == getData.size());
 
         Rows Cmp;
-        Row tmp;
+        Row nRow;
+        DataDB item;
+        string str;
+        string name;
         for (int i = 0; i < 10; ++i)
         {
-            tmp.clear();
+            nRow.clear();
 
-            tmp.push_back(to_string(i+1)); //id
-            string name = "test" + to_string(i) + ".jpg";
-            tmp.push_back(name); //name
-            tmp.push_back(string("1024"));//size
+            str = to_string(i+1);
+            item.data = str.c_str();
+            nRow.push_back(item); //id
 
-            Cmp.push_back(tmp);
+            name = "test" + to_string(i) + ".jpg";
+            item.data = name.c_str();
+            nRow.push_back(item); //name
+
+            item.data = "1024";
+            nRow.push_back(item);//size
+
+            Cmp.push_back(nRow);
         }
 
         CHECK(Cmp == getData);
 
-    }
+        for (int i = 0; i < getData.size(); ++i)
+        {
+            for (int j = 0; j < getData[i].size(); ++j)
+            {
+                CHECK(Cmp[i][j] == getData[i][j]);
+                cout << "Cmp: " << Cmp[i][j].data << " == getData: " << getData[i][j].data << endl;
+            }
+        }
+        
 
+    }
 
     //关闭连接
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;
 }
-
-#endif 

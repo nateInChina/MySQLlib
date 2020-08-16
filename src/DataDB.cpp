@@ -97,4 +97,11 @@ namespace MYSQLCPP
         return true;
     }
     
+    bool DataDB::operator == (const DataDB &another) const
+    {
+        if (strcmp(data, another.data) == 0)
+            return true;
+
+        return false;
+    }
 }

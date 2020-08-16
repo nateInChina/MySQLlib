@@ -7,6 +7,21 @@
 
 using namespace std;
 using namespace MYSQLCPP;
+/*
+测试方法：
+    前提：首次要保证MYSQL服务器打开！！（相关的库、用户名按你自己的安装的数据库来修改下面的代码）
+    下面的例程按顺序标号，称为第1个例程、第2个例程，依此类推
+    
+    第1个例程：
+        这个例程简单，只要运行完后 **显示全部成功** 后，在数据库中查找是否有添加了相关的记录。
+    第2个例程：
+        这个例程是把一个叫mysql.jpg的图片读取入库，所以你要在项目根目录下拷贝进一张图片，
+        可以改名为mysql.jpg，也可以直接修改代码成你图片的文件名。
+        运行 **显示全部成功** 后，在数据库中查找是否有添加了相关的记录。
+    第3个例程：
+        从数据库中读出mysql.jpg的数据，并保存工程根目录下，命名为mysql_read.jpg;
+        运行 **显示全部成功** 后，在工程根目录下打开mysql_read.jpg，看图片是否显示正常。
+*/
 
 TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "测试插入非二进制数据", "[Insert_not_binary]")
 {
@@ -74,7 +89,6 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "测试插入二进制数据", "[Insert_binary]")
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;
-
 }
 
 //读出插入的图片数据

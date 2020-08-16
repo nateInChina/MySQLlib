@@ -6,7 +6,7 @@ struct MYSQL;
 struct MYSQL_RES;
 namespace MYSQLCPP {
     //多行数据
-    typedef std::vector<std::vector<std::string>> Rows;
+    typedef std::vector<std::vector<DataDB>> Rows;
     
     //一行数据
     typedef std::vector<DataDB> Row;

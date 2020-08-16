@@ -97,6 +97,8 @@ namespace MYSQLCPP
         bool LoadFile(const char *path);
         bool Free();
 
+        bool operator ==(const DataDB &another) const;
+
         DBMYSQL_FIELD_TYPE FILE_TYPE;
         const char *data = nullptr;
         unsigned long size;
