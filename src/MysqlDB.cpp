@@ -465,7 +465,7 @@ namespace MYSQLCPP {
         if (!stmt)
         {
             #ifdef DEBUG
-            DEBUG_STMT_ERR(stmt, "mysql_stmt_init eror", __FILE__, __LINE__);
+            DEBUG_STMT_ERR(stmt, "mysql_stmt_init error", __FILE__, __LINE__);
             #endif // DEBUG
             return false;
         }
@@ -475,6 +475,8 @@ namespace MYSQLCPP {
             #ifdef DEBUG
             DEBUG_STMT_ERR(stmt, "mysql_stmt_prepare error", __FILE__, __LINE__);
             #endif // DEBUG
+
+            mysql_stmt_close(stmt);
             return false;
         }
 
@@ -484,6 +486,7 @@ namespace MYSQLCPP {
             DEBUG_STMT_ERR(stmt, "mysql_stmt_bind_param error", __FILE__, __LINE__);
             #endif // DEBUG
 
+            mysql_stmt_close(stmt);
             return false;
         }
 
@@ -493,10 +496,124 @@ namespace MYSQLCPP {
             DEBUG_STMT_ERR(stmt, "mysql_stmt_execute error", __FILE__, __LINE__);
             #endif // DEBUG
 
+            mysql_stmt_close(stmt);
             return false;
         }
 
         mysql_stmt_close(stmt);
+        return true;
+    }
+
+    bool MySQLDB::Update(DataKeyVal &kv, string TableName, string where)
+    {
+        //入参检查，where可以为空，调用者让where为空要慎重，可能会把表内数据全修改了。
+        if (mysql == nullptr || 0 == kv.size() || 0 == TableName.size())
+        {
+            #ifdef _DEBUG
+            DEBUG_ERRINFO("Update parama error!", __FILE__, __LINE__);
+            #endif // _DEBUG
+            return false;
+        }
+
+        // UPDATE `...` SET `...` = ... WHERE `...`=...;
+        string sql = "UPDATE `" + TableName + "` SET ";
+
+        string set;
+
+        for (auto ptr = kv.begin(); ptr != kv.end(); ++ptr)
+        {
+            //`id`=100,`sfe`=115,
+            set += "`" + ptr->first + "`=" + ptr->second.data + ",";
+        }
+
+        //去除尾部多余的空格
+        set[set.size() - 1] = ' ';
+
+        sql += set + where;
+
+        if (!Query(sql.c_str()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    //调用本接口，kv窗口中一定要放二进制数据，否则会出错。
+    bool MySQLDB::UpdateBin(DataKeyVal &kv, string TableName, string where)
+    {
+        //入参检查，where可以为空，调用者让where为空要慎重，可能会把表内数据全修改了。
+        if (mysql == nullptr || 0 == kv.size() || 0 == TableName.size())
+        {
+            #ifdef _DEBUG
+            DEBUG_ERRINFO("UpdateBin parama error!", __FILE__, __LINE__);
+            #endif // _DEBUG
+            return false;
+        }
+
+        // UPDATE `...` SET `...` = ... WHERE `...`=...;
+        string sql = "UPDATE `" + TableName + "` SET ";
+
+
+        //这里可能有坑，kv容器中不能有超过100个的健值对，一般
+        //一般也不可能会插入100个字段吧？
+        MYSQL_BIND bind[100] = { 0 };
+        int nIdx = 0;
+        for (auto ptr = kv.begin(); ptr != kv.end(); ++ptr)
+        {
+            sql += "`" + ptr->first + "`=?,";
+
+            bind[nIdx].buffer = (char *)ptr->second.data;
+            bind[nIdx].buffer_length = ptr->second.size;
+            bind[nIdx].buffer_type = (enum_field_types)ptr->second.FILE_TYPE;
+            ++nIdx;
+        }
+        
+        //去除尾部多余的空格
+        sql[sql.size() - 1] = ' ';
+        
+        //UPDATE `t_data` SET `data`= ? where `id`=1;
+        sql += where;
+
+        MYSQL_STMT *stmt = mysql_stmt_init(mysql);
+
+        if (!stmt)
+        {
+            #ifdef DEBUG
+            DEBUG_STMT_ERR(stmt, "mysql_stmt_init error", __FILE__, __LINE__);
+            #endif // DEBUG
+            return false;
+        }
+
+        if (mysql_stmt_prepare(stmt, sql.c_str(), sql.size()) != 0)
+        {
+            #ifdef DEBUG
+            DEBUG_STMT_ERR(stmt, "mysql_stmt_prepare error", __FILE__, __LINE__);
+            #endif // DEBUG
+            mysql_stmt_close(stmt);
+            return false;
+        }
+
+        if (mysql_stmt_bind_param(stmt, bind) != 0)
+        {
+            #ifdef DEBUG
+            DEBUG_STMT_ERR(stmt, "mysql_stmt_bind_param error", __FILE__, __LINE__);
+            #endif // DEBUG
+            mysql_stmt_close(stmt);
+            return false;
+        }
+
+        if (mysql_stmt_execute(stmt) != 0)
+        {
+            #ifdef DEBUG
+            DEBUG_STMT_ERR(stmt, "mysql_stmt_execute error", __FILE__, __LINE__);
+            #endif // DEBUG
+            mysql_stmt_close(stmt);
+            return false;
+        }
+
+        mysql_stmt_close(stmt);
+
         return true;
     }
 }
