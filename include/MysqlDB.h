@@ -65,9 +65,14 @@ namespace MYSQLCPP {
         
         bool UpdateBin(DataKeyVal &kv, std::string TableName, std::string where);
 
-        bool START_TRANSACTION();
-        bool COMMIT();
-        bool ROLLBACK();
+        bool StartTransaction();
+
+        bool StopTransaction();
+
+        bool Commit();
+
+        bool Rollback();
+
 
     protected:
         

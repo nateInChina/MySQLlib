@@ -132,7 +132,7 @@ namespace MYSQLCPP {
         return true;
     }
 
-    //MySQL参数设const char *unix_socket,定，在Connect之前调用
+    //MySQL参数设定，在Connect之前调用
     bool MySQLDB::Options(enum DBMYSQL_OPTION option, const void *arg)
     {
         if (mysql_options(mysql, (mysql_option)option, arg))
@@ -470,7 +470,7 @@ namespace MYSQLCPP {
             return false;
         }
 
-        if (mysql_stmt_prepare(stmt, sql.c_str(), sql.size()) != 0)
+        if (mysql_stmt_prepare(stmt, sql.c_str(), (unsigned long)sql.size()) != 0)
         {
             #ifdef DEBUG
             DEBUG_STMT_ERR(stmt, "mysql_stmt_prepare error", __FILE__, __LINE__);
@@ -585,7 +585,7 @@ namespace MYSQLCPP {
             return false;
         }
 
-        if (mysql_stmt_prepare(stmt, sql.c_str(), sql.size()) != 0)
+        if (mysql_stmt_prepare(stmt, sql.c_str(), (unsigned long)sql.size()) != 0)
         {
             #ifdef DEBUG
             DEBUG_STMT_ERR(stmt, "mysql_stmt_prepare error", __FILE__, __LINE__);
@@ -615,5 +615,26 @@ namespace MYSQLCPP {
         mysql_stmt_close(stmt);
 
         return true;
+    }
+
+
+    bool MySQLDB::StartTransaction()
+    {
+        return Query("SET autocommit=0;");
+    }
+
+    bool MySQLDB::StopTransaction()
+    {
+        return Query("SET autocommit=1;");
+    }
+
+    bool MySQLDB::Commit()
+    {
+        return Query("COMMIT;");
+    }
+
+    bool MySQLDB::Rollback()
+    {
+        return Query("ROLLBACK;");
     }
 }
