@@ -9,9 +9,16 @@ using namespace MYSQLCPP;
 
 /*
 测试方法：
-    
+    前提：mysql服务一定要记得启动
 
-   
+    在这个字符集转化接口中，只有一个单元测试用例
+    在下面的代码注释中也写得很清楚了，分两种情况
+    UTF8转GBK和GBK转UTF8，在不同的操作系统，不同
+    编码的源文件，不同的编译器可能都有差别。
+      
+    作者的环境：
+        windows下运行：VS2015 + 所有源文件UTF8带BOM
+        linux下运行：g++ 4.8.5 + 所有源文件UTF8带BOM
 */
 
 TEST_CASE_METHOD(MySQLDB, "字符转码", "[character_set]") {
@@ -98,7 +105,6 @@ TEST_CASE_METHOD(MySQLDB, "字符转码", "[character_set]") {
         //2、不调用Uft8ToGbk()
         cout << read[0].data << endl;
     }
-    
     //////////////////////////////////////////////////////////
 
 #else
@@ -168,8 +174,6 @@ TEST_CASE_METHOD(MySQLDB, "字符转码", "[character_set]") {
 
         
     }
-
-
     //////////////////////////////////////////////////////////
 #endif //_WIN32
 
