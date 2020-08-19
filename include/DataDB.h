@@ -1,10 +1,15 @@
 #pragma once
+
+#ifdef _WIN32
 #ifdef MYSQLLIB_EXPORTS
 //动态链接库项目调用
 #define MYSQLAPI  __declspec(dllexport)
 #else
 //执行程序调用
 #define MYSQLAPI  __declspec(dllimport)
+#endif
+#else
+#define MYSQLAPI
 #endif
 
 #include <map>
@@ -98,6 +103,10 @@ namespace MYSQLCPP
         bool Free();
 
         bool operator ==(const DataDB &another) const;
+
+        std::string Utf8ToGbk();
+
+        std::string GbkToUtf8();
 
         DBMYSQL_FIELD_TYPE FILE_TYPE;
         const char *data = nullptr;

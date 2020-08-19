@@ -2,6 +2,7 @@
 #include "DataDB.h"
 #include "MysqlDB.h"
 #include <string>
+#include <string.h>
 #include <iostream>
 
 using namespace std;

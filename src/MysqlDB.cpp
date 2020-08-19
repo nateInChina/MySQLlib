@@ -1,6 +1,7 @@
 ﻿#include "MysqlDB.h"
 #include <iostream>
 #include <mysql.h>
+#include <string.h>
 
 #define DEBUG
 using namespace std;

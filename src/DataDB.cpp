@@ -1,6 +1,11 @@
 #include "DataDB.h"
 #include <fstream>
 #include <iostream>
+#include <string.h>
+#ifdef _WIN32
+#include <Windows.h>
+#endif // _WIN32
+
 
 using namespace std;
 
@@ -27,6 +32,13 @@ namespace {
 
 namespace MYSQLCPP
 {
+#ifndef _WIN32
+    //linux下字符编码转换函数
+
+
+
+#endif
+
     DataDB::DataDB(const char *val)
     {
         if (nullptr == val)
@@ -103,5 +115,119 @@ namespace MYSQLCPP
             return true;
 
         return false;
+    }
+
+    //成功，返回转码后的字符串
+    //失败，返回的字符的size为0
+    string DataDB::Utf8ToGbk()
+    {
+        string re;
+
+#ifdef _WIN32
+
+        //1、转成宽字符(UTF16 编码),win32 API是接受UNICODE类开的参数，转化它们的编码。
+        //第一次调用MultiByteToWideChar算出需要的字符串长度
+        int nBufSize = MultiByteToWideChar(CP_UTF8, 0, data, -1, nullptr, 0);
+        if (!nBufSize)
+        {
+            #ifdef DEBUG
+            DEBUG_ERRINFO("MultiByteToWideChar first time error", __FILE__, __LINE__);
+            #endif //DEBUG
+            return re;
+        }
+
+        wstring buf;
+        buf.resize(nBufSize);
+        //第二次调用MultiByteToWideChar才是真正的转化成宽字符串
+        if (!MultiByteToWideChar(CP_UTF8, 0, data, -1, (LPWSTR)buf.c_str(), nBufSize))
+        {
+            #ifdef DEBUG
+            DEBUG_ERRINFO("MultiByteToWideChar second time error", __FILE__, __LINE__);
+            #endif //DEBUG
+            return re;
+        }
+
+        int ReStrSize = WideCharToMultiByte(CP_ACP, 0, buf.c_str(), nBufSize, 0, 0, 0, 0);
+        if (!ReStrSize)
+        {
+            #ifdef DEBUG
+            DEBUG_ERRINFO("WideCharToMultiByte first time error", __FILE__, __LINE__);
+            #endif //DEBUG
+            return re;
+        }
+
+        re.resize(ReStrSize);
+
+        if (!WideCharToMultiByte(CP_ACP, 0, buf.c_str(), nBufSize, (LPSTR)re.c_str(), ReStrSize, 0, 0))
+        {
+            #ifdef DEBUG
+            DEBUG_ERRINFO("WideCharToMultiByte first time error", __FILE__, __LINE__);
+            #endif //DEBUG
+            re.shrink_to_fit();
+            return re;
+        }   
+#else
+        
+
+#endif // _WIN32
+
+        return re;
+    }
+
+    //成功，返回转码后的字符串
+    //失败，返回的字符的size为0
+    string DataDB::GbkToUtf8()
+    {
+        string re;
+
+#ifdef _WIN32
+
+        //1、转成宽字符(UTF16 编码),win32 API是接受UNICODE类开的参数，转化它们的编码。
+        //第一次调用MultiByteToWideChar算出需要的字符串长度
+        int nBufSize = MultiByteToWideChar(CP_ACP, 0, data, -1, nullptr, 0);
+        if (!nBufSize)
+        {
+#ifdef DEBUG
+            DEBUG_ERRINFO("MultiByteToWideChar first time error", __FILE__, __LINE__);
+#endif //DEBUG
+            return re;
+        }
+
+        wstring buf;
+        buf.resize(nBufSize);
+        //第二次调用MultiByteToWideChar才是真正的转化成宽字符串
+        if (!MultiByteToWideChar(CP_ACP, 0, data, -1, (LPWSTR)buf.c_str(), nBufSize))
+        {
+#ifdef DEBUG
+            DEBUG_ERRINFO("MultiByteToWideChar second time error", __FILE__, __LINE__);
+#endif //DEBUG
+            return re;
+        }
+
+        int ReStrSize = WideCharToMultiByte(CP_UTF8, 0, buf.c_str(), nBufSize, 0, 0, 0, 0);
+        if (!ReStrSize)
+        {
+#ifdef DEBUG
+            DEBUG_ERRINFO("WideCharToMultiByte first time error", __FILE__, __LINE__);
+#endif //DEBUG
+            return re;
+        }
+
+        re.resize(ReStrSize);
+
+        if (!WideCharToMultiByte(CP_UTF8, 0, buf.c_str(), nBufSize, (LPSTR)re.c_str(), ReStrSize, 0, 0))
+        {
+#ifdef DEBUG
+            DEBUG_ERRINFO("WideCharToMultiByte first time error", __FILE__, __LINE__);
+#endif //DEBUG
+            re.shrink_to_fit();
+            return re;
+        }
+#else
+
+
+
+#endif // _WIN32
+        return re;
     }
 }
