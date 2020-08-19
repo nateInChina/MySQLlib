@@ -1,9 +1,11 @@
-#include "DataDB.h"
+ï»¿#include "DataDB.h"
 #include <fstream>
 #include <iostream>
 #include <string.h>
 #ifdef _WIN32
-#include <Windows.h>
+    #include <Windows.h>
+#else
+    #include <iconv.h>
 #endif // _WIN32
 
 
@@ -33,8 +35,50 @@ namespace {
 namespace MYSQLCPP
 {
 #ifndef _WIN32
-    //linuxÏÂ×Ö·û±àÂë×ª»»º¯Êı
+    //linuxä¸‹å­—ç¬¦ç¼–ç è½¬æ¢å‡½æ•°
+    static bool Convert(const char *tocode, const char *fromcode, 
+                        char *inbuf, size_t inbytesleft,
+                        char *outbuf, size_t outbytesleft)
+    {
+        if (nullptr == tocode || nullptr == fromcode || 
+            nullptr == tocode || nullptr == fromcode)
+        {
+            #ifdef _DEBUG   
+            DEBUG_ERRINFO("Convert input param error", __FILE__, __LINE__);
+            #endif // _DEBUG
 
+            return false;
+        }
+
+        //iconv_t iconv_open(const char *tocode, const char *fromcode);
+        iconv_t cv = iconv_open(tocode, fromcode);
+
+        if ((iconv_t)-1 == cv)
+        {
+            #ifdef _DEBUG   
+            DEBUG_ERRINFO("iconv_open error", __FILE__, __LINE__);
+            #endif // _DEBUG
+
+            return false;
+        }
+
+        memset(outbuf, 0, outbytesleft);
+
+        size_t rtn = iconv(cv, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+
+        if ((size_t)-1 == rtn)
+        {
+            #ifdef _DEBUG   
+            DEBUG_ERRINFO("iconv error", __FILE__, __LINE__);
+            #endif // _DEBUG
+
+            return false;
+        }
+
+        iconv_close(cv);
+
+        return true;
+    }
 
 
 #endif
@@ -59,8 +103,8 @@ namespace MYSQLCPP
         FILE_TYPE = DBMYSQL_TYPE_LONG;
     }
     
-    //½«ÎÄ¼şÄÚÈİ¼ÓÔØµ½dataÖĞ£¬×¢Òâ£¬±¾½Ó¿ÚÊ¹ÓÃÍê£¬Òªµ÷ÓÃFree°ÑÉêÇëµÄ¿Õ¼äÊÍ·Å
-    //TODO£ºÀûÓÃRAIIÔÙ½«·â×°Õâ¸ö½Ó¿Ú£¬¾Í²»ĞèÒªÊ¹ÓÃÊ±Ğ¡ĞÄÒíÒíÁË¡£
+    //å°†æ–‡ä»¶å†…å®¹åŠ è½½åˆ°dataä¸­ï¼Œæ³¨æ„ï¼Œæœ¬æ¥å£ä½¿ç”¨å®Œï¼Œè¦è°ƒç”¨FreeæŠŠç”³è¯·çš„ç©ºé—´é‡Šæ”¾
+    //TODOï¼šåˆ©ç”¨RAIIå†å°†å°è£…è¿™ä¸ªæ¥å£ï¼Œå°±ä¸éœ€è¦ä½¿ç”¨æ—¶å°å¿ƒç¿¼ç¿¼äº†ã€‚
     bool DataDB::LoadFile(const char *path)
     {
         if (nullptr == path)
@@ -81,8 +125,8 @@ namespace MYSQLCPP
 
         sf.seekg(0, ios::beg);
 
-        //ÎªÎÄ¼şÄÚÈİµÄ´óĞ¡ÉêÇë¿Õ¼ä
-        char *FileData = new char[size]; //Ò»¶¨Òª¼ÇµÃÊÍ·Å
+        //ä¸ºæ–‡ä»¶å†…å®¹çš„å¤§å°ç”³è¯·ç©ºé—´
+        char *FileData = new char[size]; //ä¸€å®šè¦è®°å¾—é‡Šæ”¾
         int read = 0;
 
         while (!sf.eof())
@@ -117,16 +161,16 @@ namespace MYSQLCPP
         return false;
     }
 
-    //³É¹¦£¬·µ»Ø×ªÂëºóµÄ×Ö·û´®
-    //Ê§°Ü£¬·µ»ØµÄ×Ö·ûµÄsizeÎª0
+    //æˆåŠŸï¼Œè¿”å›è½¬ç åçš„å­—ç¬¦ä¸²
+    //å¤±è´¥ï¼Œè¿”å›çš„å­—ç¬¦çš„sizeä¸º0
     string DataDB::Utf8ToGbk()
     {
         string re;
 
 #ifdef _WIN32
 
-        //1¡¢×ª³É¿í×Ö·û(UTF16 ±àÂë),win32 APIÊÇ½ÓÊÜUNICODEÀà¿ªµÄ²ÎÊı£¬×ª»¯ËüÃÇµÄ±àÂë¡£
-        //µÚÒ»´Îµ÷ÓÃMultiByteToWideCharËã³öĞèÒªµÄ×Ö·û´®³¤¶È
+        //1ã€è½¬æˆå®½å­—ç¬¦(UTF16 ç¼–ç ),win32 APIæ˜¯æ¥å—UNICODEç±»å¼€çš„å‚æ•°ï¼Œè½¬åŒ–å®ƒä»¬çš„ç¼–ç ã€‚
+        //ç¬¬ä¸€æ¬¡è°ƒç”¨MultiByteToWideCharç®—å‡ºéœ€è¦çš„å­—ç¬¦ä¸²é•¿åº¦
         int nBufSize = MultiByteToWideChar(CP_UTF8, 0, data, -1, nullptr, 0);
         if (!nBufSize)
         {
@@ -138,7 +182,7 @@ namespace MYSQLCPP
 
         wstring buf;
         buf.resize(nBufSize);
-        //µÚ¶ş´Îµ÷ÓÃMultiByteToWideChar²ÅÊÇÕæÕıµÄ×ª»¯³É¿í×Ö·û´®
+        //ç¬¬äºŒæ¬¡è°ƒç”¨MultiByteToWideCharæ‰æ˜¯çœŸæ­£çš„è½¬åŒ–æˆå®½å­—ç¬¦ä¸²
         if (!MultiByteToWideChar(CP_UTF8, 0, data, -1, (LPWSTR)buf.c_str(), nBufSize))
         {
             #ifdef DEBUG
@@ -167,23 +211,30 @@ namespace MYSQLCPP
             return re;
         }   
 #else
-        
-
+#if 1
+        re.resize(1024);
+        if (!Convert("GBK", "UTF8", (char*)data, size, (char*)re.data(), re.size()))
+        {
+            return false;
+        }
+        //è¿™é‡Œçœ‹å¯ä¸å¯ä»¥ä¼˜åŒ–
+        string rtn(re.data());
+#endif
 #endif // _WIN32
 
         return re;
     }
 
-    //³É¹¦£¬·µ»Ø×ªÂëºóµÄ×Ö·û´®
-    //Ê§°Ü£¬·µ»ØµÄ×Ö·ûµÄsizeÎª0
+    //æˆåŠŸï¼Œè¿”å›è½¬ç åçš„å­—ç¬¦ä¸²
+    //å¤±è´¥ï¼Œè¿”å›çš„å­—ç¬¦çš„sizeä¸º0
     string DataDB::GbkToUtf8()
     {
         string re;
 
 #ifdef _WIN32
 
-        //1¡¢×ª³É¿í×Ö·û(UTF16 ±àÂë),win32 APIÊÇ½ÓÊÜUNICODEÀà¿ªµÄ²ÎÊı£¬×ª»¯ËüÃÇµÄ±àÂë¡£
-        //µÚÒ»´Îµ÷ÓÃMultiByteToWideCharËã³öĞèÒªµÄ×Ö·û´®³¤¶È
+        //1ã€è½¬æˆå®½å­—ç¬¦(UTF16 ç¼–ç ),win32 APIæ˜¯æ¥å—UNICODEç±»å¼€çš„å‚æ•°ï¼Œè½¬åŒ–å®ƒä»¬çš„ç¼–ç ã€‚
+        //ç¬¬ä¸€æ¬¡è°ƒç”¨MultiByteToWideCharç®—å‡ºéœ€è¦çš„å­—ç¬¦ä¸²é•¿åº¦
         int nBufSize = MultiByteToWideChar(CP_ACP, 0, data, -1, nullptr, 0);
         if (!nBufSize)
         {
@@ -195,7 +246,7 @@ namespace MYSQLCPP
 
         wstring buf;
         buf.resize(nBufSize);
-        //µÚ¶ş´Îµ÷ÓÃMultiByteToWideChar²ÅÊÇÕæÕıµÄ×ª»¯³É¿í×Ö·û´®
+        //ç¬¬äºŒæ¬¡è°ƒç”¨MultiByteToWideCharæ‰æ˜¯çœŸæ­£çš„è½¬åŒ–æˆå®½å­—ç¬¦ä¸²
         if (!MultiByteToWideChar(CP_ACP, 0, data, -1, (LPWSTR)buf.c_str(), nBufSize))
         {
 #ifdef DEBUG
@@ -224,9 +275,21 @@ namespace MYSQLCPP
             return re;
         }
 #else
-
-
-
+#if 1
+        /*
+        bool Convert(const char *tocode, const char *fromcode,
+                        char *inbuf, size_t inbytesleft,
+                        char *outbuf, size_t outbytesleft)
+        */
+        re.resize(1024);
+        if (!Convert("UTF8", "GBK", (char*)data, size, (char*)re.data(), re.size()))
+        {
+            return false;
+        }
+        //è¿™é‡Œçœ‹å¯ä¸å¯ä»¥ä¼˜åŒ–
+        string rtn(re.data());
+        re = rtn;
+#endif
 #endif // _WIN32
         return re;
     }

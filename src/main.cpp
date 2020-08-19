@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_MAIN
+Ôªø#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
 //#include "datadb.h"
@@ -14,13 +14,13 @@
 //{
 //    mysqldb my;
 //
-//    //1 mysql ≥ı ºªØ
+//    //1 mysql ÂàùÂßãÂåñ
 //    cout << "my.init() = " << my.init() << endl;
 //
-//    //2 ¡¨Ω”mysql »Áπ˚√ª”–µ˜”√init ƒ⁄≤øª·◊‘∂Øµ˜”√
+//    //2 ËøûÊé•mysql Â¶ÇÊûúÊ≤°ÊúâË∞ÉÁî®init ÂÜÖÈÉ®‰ºöËá™Âä®Ë∞ÉÁî®
 //    if (my.connect("localhost", "root", "123456", "lipz31"))
 //    {
-//        cout << "my.connect success£°" << endl;
+//        cout << "my.connect successÔºÅ" << endl;
 //    }
 //
 //    my.close();

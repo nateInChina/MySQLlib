@@ -1,4 +1,4 @@
-#include "catch.hpp"
+ï»¿#include "catch.hpp"
 #include "DataDB.h"
 #include "MysqlDB.h"
 #include <string>
@@ -8,32 +8,32 @@
 using namespace std;
 using namespace MYSQLCPP;
 /*
-²âÊÔ·½·¨£º
-    Ç°Ìá£ºÊ×´ÎÒª±£Ö¤MYSQL·þÎñÆ÷´ò¿ª£¡£¡£¨Ïà¹ØµÄ¿â¡¢ÓÃ»§Ãû°´Äã×Ô¼ºµÄ°²×°µÄÊý¾Ý¿âÀ´ÐÞ¸ÄÏÂÃæµÄ´úÂë£©
-    ÏÂÃæµÄÀý³Ì°´Ë³Ðò±êºÅ£¬³ÆÎªµÚ1¸öÀý³Ì¡¢µÚ2¸öÀý³Ì£¬ÒÀ´ËÀàÍÆ
+æµ‹è¯•æ–¹æ³•ï¼š
+    å‰æï¼šé¦–æ¬¡è¦ä¿è¯MYSQLæœåŠ¡å™¨æ‰“å¼€ï¼ï¼ï¼ˆç›¸å…³çš„åº“ã€ç”¨æˆ·åæŒ‰ä½ è‡ªå·±çš„å®‰è£…çš„æ•°æ®åº“æ¥ä¿®æ”¹ä¸‹é¢çš„ä»£ç ï¼‰
+    ä¸‹é¢çš„ä¾‹ç¨‹æŒ‰é¡ºåºæ ‡å·ï¼Œç§°ä¸ºç¬¬1ä¸ªä¾‹ç¨‹ã€ç¬¬2ä¸ªä¾‹ç¨‹ï¼Œä¾æ­¤ç±»æŽ¨
     
-    µÚ1¸öÀý³Ì£º
-        Õâ¸öÀý³Ì¼òµ¥£¬Ö»ÒªÔËÐÐÍêºó **ÏÔÊ¾È«²¿³É¹¦** ºó£¬ÔÚÊý¾Ý¿âÖÐ²éÕÒÊÇ·ñÓÐÌí¼ÓÁËÏà¹ØµÄ¼ÇÂ¼¡£
-    µÚ2¸öÀý³Ì£º
-        Õâ¸öÀý³ÌÊÇ°ÑÒ»¸ö½Ðmysql.jpgµÄÍ¼Æ¬¶ÁÈ¡Èë¿â£¬ËùÒÔÄãÒªÔÚÏîÄ¿¸ùÄ¿Â¼ÏÂ¿½±´½øÒ»ÕÅÍ¼Æ¬£¬
-        ¿ÉÒÔ¸ÄÃûÎªmysql.jpg£¬Ò²¿ÉÒÔÖ±½ÓÐÞ¸Ä´úÂë³ÉÄãÍ¼Æ¬µÄÎÄ¼þÃû¡£
-        ÔËÐÐ **ÏÔÊ¾È«²¿³É¹¦** ºó£¬ÔÚÊý¾Ý¿âÖÐ²éÕÒÊÇ·ñÓÐÌí¼ÓÁËÏà¹ØµÄ¼ÇÂ¼¡£
-    µÚ3¸öÀý³Ì£º
-        ´ÓÊý¾Ý¿âÖÐ¶Á³ömysql.jpgµÄÊý¾Ý£¬²¢±£´æ¹¤³Ì¸ùÄ¿Â¼ÏÂ£¬ÃüÃûÎªmysql_read.jpg;
-        ÔËÐÐ **ÏÔÊ¾È«²¿³É¹¦** ºó£¬ÔÚ¹¤³Ì¸ùÄ¿Â¼ÏÂ´ò¿ªmysql_read.jpg£¬¿´Í¼Æ¬ÊÇ·ñÏÔÊ¾Õý³£¡£
+    ç¬¬1ä¸ªä¾‹ç¨‹ï¼š
+        è¿™ä¸ªä¾‹ç¨‹ç®€å•ï¼Œåªè¦è¿è¡Œå®ŒåŽ **æ˜¾ç¤ºå…¨éƒ¨æˆåŠŸ** åŽï¼Œåœ¨æ•°æ®åº“ä¸­æŸ¥æ‰¾æ˜¯å¦æœ‰æ·»åŠ äº†ç›¸å…³çš„è®°å½•ã€‚
+    ç¬¬2ä¸ªä¾‹ç¨‹ï¼š
+        è¿™ä¸ªä¾‹ç¨‹æ˜¯æŠŠä¸€ä¸ªå«mysql.jpgçš„å›¾ç‰‡è¯»å–å…¥åº“ï¼Œæ‰€ä»¥ä½ è¦åœ¨é¡¹ç›®æ ¹ç›®å½•ä¸‹æ‹·è´è¿›ä¸€å¼ å›¾ç‰‡ï¼Œ
+        å¯ä»¥æ”¹åä¸ºmysql.jpgï¼Œä¹Ÿå¯ä»¥ç›´æŽ¥ä¿®æ”¹ä»£ç æˆä½ å›¾ç‰‡çš„æ–‡ä»¶åã€‚
+        è¿è¡Œ **æ˜¾ç¤ºå…¨éƒ¨æˆåŠŸ** åŽï¼Œåœ¨æ•°æ®åº“ä¸­æŸ¥æ‰¾æ˜¯å¦æœ‰æ·»åŠ äº†ç›¸å…³çš„è®°å½•ã€‚
+    ç¬¬3ä¸ªä¾‹ç¨‹ï¼š
+        ä»Žæ•°æ®åº“ä¸­è¯»å‡ºmysql.jpgçš„æ•°æ®ï¼Œå¹¶ä¿å­˜å·¥ç¨‹æ ¹ç›®å½•ä¸‹ï¼Œå‘½åä¸ºmysql_read.jpg;
+        è¿è¡Œ **æ˜¾ç¤ºå…¨éƒ¨æˆåŠŸ** åŽï¼Œåœ¨å·¥ç¨‹æ ¹ç›®å½•ä¸‹æ‰“å¼€mysql_read.jpgï¼Œçœ‹å›¾ç‰‡æ˜¯å¦æ˜¾ç¤ºæ­£å¸¸ã€‚
 */
 
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ²åÈë·Ç¶þ½øÖÆÊý¾Ý", "[Insert_not_binary]")
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "æµ‹è¯•æ’å…¥éžäºŒè¿›åˆ¶æ•°æ®", "[Insert_not_binary]")
 {
     cout << "[INFO]:begin mysql!!" << endl;
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    //Á¬½ÓÊý¾Ý¿â
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    //è¿žæŽ¥æ•°æ®åº“
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
 
-    //½¨±í
+    //å»ºè¡¨
     string sql = "CREATE TABLE IF NOT EXISTS `t_data`( \
 		`id` int AUTO_INCREMENT, \
 		`name` varchar(1024), \
@@ -56,21 +56,21 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ²åÈë·Ç¶þ½øÖÆÊý¾Ý", "[Insert_not_binary]
 
     CHECK(true == Insert(istData, "t_data"));
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;
 }
 
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ²åÈë¶þ½øÖÆÊý¾Ý", "[Insert_binary]")
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "æµ‹è¯•æ’å…¥äºŒè¿›åˆ¶æ•°æ®", "[Insert_binary]")
 {
     cout << "[INFO]:begin mysql!!" << endl;
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    //Á¬½ÓÊý¾Ý¿â
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    //è¿žæŽ¥æ•°æ®åº“
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
 
     DataKeyVal val;
     DataDB file;
@@ -82,27 +82,27 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ²åÈë¶þ½øÖÆÊý¾Ý", "[Insert_binary]")
 
     CHECK(true == InsertBin(val, "t_data"));
 
-    //Ò»¶¨Òª¼ÇµÃ°ÑLoadFileÉêÇëµÄ¿Õ¼äÊÍ·Åµô
+    //ä¸€å®šè¦è®°å¾—æŠŠLoadFileç”³è¯·çš„ç©ºé—´é‡Šæ”¾æŽ‰
     file.Free();
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;
 }
 
-//¶Á³ö²åÈëµÄÍ¼Æ¬Êý¾Ý
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ¶Á³ö¶þ½øÖÆÊý¾Ý£¬¿´Êý¾ÝÕýÈ·Óë·ñ", "[Insert_binary_read_and_compare]")
+//è¯»å‡ºæ’å…¥çš„å›¾ç‰‡æ•°æ®
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "æµ‹è¯•è¯»å‡ºäºŒè¿›åˆ¶æ•°æ®ï¼Œçœ‹æ•°æ®æ­£ç¡®ä¸Žå¦", "[Insert_binary_read_and_compare]")
 {
     cout << "[INFO]:begin mysql!!" << endl;
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    //Á¬½ÓÊý¾Ý¿â
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    //è¿žæŽ¥æ•°æ®åº“
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
 
-    //sql¶ÁÈ¡Êý¾Ý
+    //sqlè¯»å–æ•°æ®
     string sql = "select `data`,`size` from `t_data` where `name`='binary_test';";
 
     Query(sql.c_str());
@@ -113,7 +113,7 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ¶Á³ö¶þ½øÖÆÊý¾Ý£¬¿´Êý¾ÝÕýÈ·Óë·ñ", "[Inse
 
     CHECK(true == FetchRow(BinData));
 
-    //¶ÁÈ¡Íê±Ï£¬½øÐÐ±È½Ï
+    //è¯»å–å®Œæ¯•ï¼Œè¿›è¡Œæ¯”è¾ƒ
     CHECK(BinData.size() == 2);
 
     fstream fs("mysq_read.jpg", ios::out | ios::binary);
@@ -128,9 +128,9 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ¶Á³ö¶þ½øÖÆÊý¾Ý£¬¿´Êý¾ÝÕýÈ·Óë·ñ", "[Inse
 
     fs.close();
 
-    cout << "Êý¾ÝÒÑ¾­Ð´µ½mysql_read.jpg£¬ÎÄ¼þÖÐ£¬ÔÚ¹¤³ÌÄ¿Â¼ÖÐ´ò¿ª¿´Ò»ÏÂÍ¼Æ¬ÊÇ·ñÓëÔ­Í¼Æ¬Ò»Ñù£¡" << endl;
+    cout << "æ•°æ®å·²ç»å†™åˆ°mysql_read.jpgï¼Œæ–‡ä»¶ä¸­ï¼Œåœ¨å·¥ç¨‹ç›®å½•ä¸­æ‰“å¼€çœ‹ä¸€ä¸‹å›¾ç‰‡æ˜¯å¦ä¸ŽåŽŸå›¾ç‰‡ä¸€æ ·ï¼" << endl;
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;

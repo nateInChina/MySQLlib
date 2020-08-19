@@ -1,4 +1,4 @@
-#include "catch.hpp"
+ï»¿#include "catch.hpp"
 #include "DataDB.h"
 #include "MysqlDB.h"
 #include <string>
@@ -9,28 +9,28 @@ using namespace std;
 using namespace MYSQLCPP;
 
 /*
-    ²âÊÔ·½·¨£º
-        Ç°Ìá£º±£Ö¤ÄãµÄmysql·þÎñÒª¿ªÆô£¡£¡£¡£¨Ïà¹ØµÄ¿âÃû³Æ¡¢ÓÃ»§Ãû¸ù¾ÝÄã×Ô¼ºÊý¾Ý¿âµÄÉèÖÃÀ´ÐÞ¸ÄÏÂÃæµÄ´úÂë£©
-        ÏÂÃæµÄÀý³Ì°´Ë³Ðò±êºÅ£¬³ÆÎªµÚ1¸öÀý³Ì¡¢µÚ2¸öÀý³Ì£¬ÒÀ´ËÀàÍÆ
-    µÚ1¸öÀý³Ì£º
-        ²âÊÔUpdate½Ó¿ÚÄÜ·ñ³É¹¦¸üÐÂ±íÀïÒ»ÐÐÊý¾ÝÖÐÖ¸¶¨µÄ·Ç¶þ½øÖÆ×Ö¶ÎµÄÖµ£¬ÏÔÊ¾passedºó£¬½øÈëmysql²é¿´ÊÇ·ñ±»ÕýÈ·¸ü¸ÄÁË¡£
-    µÚ2¸öÀý³Ì£º
-        ²âÊÔUpdateBin½Ó¿ÚÄÜ·ñ³É¹¦¸üÐÂ±íÀïÒ»ÐÐÊý¾ÝÖÐÖ¸¶¨µÄ¶þ½øÖÆ×Ö¶ÎµÄÖµ£¬±¾Àý³ÌÊÇÒÔ¶ÁÈ¡Í¼Æ¬ÎªÀý£¬°ÑÒ»ÕÅÍ¼Æ¬¶ÁÈ¡¸üÐÂ½ø
-        Êý¾Ý¿â£¬È»ºóÔÙ´ÓÊý¾Ý¿â¶ÁÈ¡Õâ¸öÍ¼Æ¬Êý¾Ý£¬ÖØÐÂÉú³ÉÒ»¸öÎÄ¼þ(ÎÄ¼þÃûÎªavatar.jpz)£¬ËùÒÔÏÔÊ¾passedºó»¹Òª´ò¿ª¹¤³ÌÄ¿Â¼
-        ÏÂÉú³ÉµÄavatar_read.jpg£¬¿´ÊÇ·ñºÍ¸üÐÂ½øµÄÍ¼Æ¬ÊÇÒ»ÑùµÄ¡£
+    æµ‹è¯•æ–¹æ³•ï¼š
+        å‰æï¼šä¿è¯ä½ çš„mysqlæœåŠ¡è¦å¼€å¯ï¼ï¼ï¼ï¼ˆç›¸å…³çš„åº“åç§°ã€ç”¨æˆ·åæ ¹æ®ä½ è‡ªå·±æ•°æ®åº“çš„è®¾ç½®æ¥ä¿®æ”¹ä¸‹é¢çš„ä»£ç ï¼‰
+        ä¸‹é¢çš„ä¾‹ç¨‹æŒ‰é¡ºåºæ ‡å·ï¼Œç§°ä¸ºç¬¬1ä¸ªä¾‹ç¨‹ã€ç¬¬2ä¸ªä¾‹ç¨‹ï¼Œä¾æ­¤ç±»æŽ¨
+    ç¬¬1ä¸ªä¾‹ç¨‹ï¼š
+        æµ‹è¯•UpdateæŽ¥å£èƒ½å¦æˆåŠŸæ›´æ–°è¡¨é‡Œä¸€è¡Œæ•°æ®ä¸­æŒ‡å®šçš„éžäºŒè¿›åˆ¶å­—æ®µçš„å€¼ï¼Œæ˜¾ç¤ºpassedåŽï¼Œè¿›å…¥mysqlæŸ¥çœ‹æ˜¯å¦è¢«æ­£ç¡®æ›´æ”¹äº†ã€‚
+    ç¬¬2ä¸ªä¾‹ç¨‹ï¼š
+        æµ‹è¯•UpdateBinæŽ¥å£èƒ½å¦æˆåŠŸæ›´æ–°è¡¨é‡Œä¸€è¡Œæ•°æ®ä¸­æŒ‡å®šçš„äºŒè¿›åˆ¶å­—æ®µçš„å€¼ï¼Œæœ¬ä¾‹ç¨‹æ˜¯ä»¥è¯»å–å›¾ç‰‡ä¸ºä¾‹ï¼ŒæŠŠä¸€å¼ å›¾ç‰‡è¯»å–æ›´æ–°è¿›
+        æ•°æ®åº“ï¼Œç„¶åŽå†ä»Žæ•°æ®åº“è¯»å–è¿™ä¸ªå›¾ç‰‡æ•°æ®ï¼Œé‡æ–°ç”Ÿæˆä¸€ä¸ªæ–‡ä»¶(æ–‡ä»¶åä¸ºavatar.jpz)ï¼Œæ‰€ä»¥æ˜¾ç¤ºpassedåŽè¿˜è¦æ‰“å¼€å·¥ç¨‹ç›®å½•
+        ä¸‹ç”Ÿæˆçš„avatar_read.jpgï¼Œçœ‹æ˜¯å¦å’Œæ›´æ–°è¿›çš„å›¾ç‰‡æ˜¯ä¸€æ ·çš„ã€‚
 */
 
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ¸üÐÂ·Ç¶þ½øÖÆÊý¾Ý", "[Update_not_binary]")
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "æµ‹è¯•æ›´æ–°éžäºŒè¿›åˆ¶æ•°æ®", "[Update_not_binary]")
 {
     cout << "[INFO]:begin mysql!!" << endl;
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    //Á¬½ÓÊý¾Ý¿â
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    //è¿žæŽ¥æ•°æ®åº“
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
 
-    //½¨±í
+    //å»ºè¡¨
     string sql = "CREATE TABLE IF NOT EXISTS `t_data`( \
 		`id` int AUTO_INCREMENT, \
 		`name` varchar(1024), \
@@ -45,23 +45,23 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ¸üÐÂ·Ç¶þ½øÖÆÊý¾Ý", "[Update_not_binary]
     kv["size"] = "1211";
     CHECK(true == Update(kv, "t_data", "where `id`=1;"));
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;
 }
 
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ¸üÐÂ¶þ½øÖÆÊý¾Ý", "[Update_binary]")
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "æµ‹è¯•æ›´æ–°äºŒè¿›åˆ¶æ•°æ®", "[Update_binary]")
 {
     cout << "[INFO]:begin mysql!!" << endl;
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    //Á¬½ÓÊý¾Ý¿â
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    //è¿žæŽ¥æ•°æ®åº“
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
 
-    //½¨±í
+    //å»ºè¡¨
     string sql = "CREATE TABLE IF NOT EXISTS `t_data`( \
 		`id` int AUTO_INCREMENT, \
 		`name` varchar(1024), \
@@ -83,7 +83,7 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ¸üÐÂ¶þ½øÖÆÊý¾Ý", "[Update_binary]")
     file.Free();
 
 #if 1
-    //sql¶ÁÈ¡Êý¾Ý
+    //sqlè¯»å–æ•°æ®
     sql = "select `data` from `t_data` where `id`=1;";
 
     Query(sql.c_str());
@@ -104,10 +104,10 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔ¸üÐÂ¶þ½øÖÆÊý¾Ý", "[Update_binary]")
 
     fs.close();
 
-    cout << "Êý¾ÝÒÑ¾­Ð´µ½avatar_read.jpg£¬ÎÄ¼þÖÐ£¬ÔÚ¹¤³ÌÄ¿Â¼ÖÐ´ò¿ª¿´Ò»ÏÂÍ¼Æ¬ÊÇ·ñÓëÔ­Í¼Æ¬Ò»Ñù£¡" << endl;
+    cout << "æ•°æ®å·²ç»å†™åˆ°avatar_read.jpgï¼Œæ–‡ä»¶ä¸­ï¼Œåœ¨å·¥ç¨‹ç›®å½•ä¸­æ‰“å¼€çœ‹ä¸€ä¸‹å›¾ç‰‡æ˜¯å¦ä¸ŽåŽŸå›¾ç‰‡ä¸€æ ·ï¼" << endl;
 #endif //0
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;

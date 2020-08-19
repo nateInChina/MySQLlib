@@ -1,4 +1,4 @@
-#include "catch.hpp"
+ï»¿#include "catch.hpp"
 #include "DataDB.h"
 #include "MysqlDB.h"
 #include <iostream>
@@ -8,37 +8,37 @@ using namespace std;
 using namespace chrono;
 
 /*
-    ²âÊÔ·½·¨£º
-        1¡¢Ê×´ÎÒª±£Ö¤MYSQL·þÎñÆ÷´ò¿ª£»
-        2¡¢ÔËÐÐ±¾´Î²âÊÔÀý³Ì
-        3¡¢ÔÚ½øÈëµÚ¶þ¸öTEST_CASE_METHODºó£¬¹Ø±Õ·þÎñÆ÷
-        ´ËÊ±TEST_CASE_METHOD»á³öÏÖ¶à¸öfailed,Ã¿¸öfailed¼ä¸ô²î²»¶à3Ãë,ÑéÖ¤ÁËÉèÖÃ³¬Ê±
-        Ê±¼äÊÇÉúÐ§µÄ
-        4¡¢Ò»¶¨Òª¿ØÖÆÔÚÖ´ÐÐµÚ3¸ö²½Öèºó10ÃëÄÚÔÙ´Î´ò¿ªmysql·þÎñ
-        ´ËÊ±µÚ¶þ¸öTEST_CASE_METHOD»á´Ófailed×ª³Épassed£¬Ö±µ½½áÊø£¬ÑéÖ¤ÁË¶ÏÏßÖØÁ¬ÊÇ
-        ÉúÐ§µÄ
+    æµ‹è¯•æ–¹æ³•ï¼š
+        1ã€é¦–æ¬¡è¦ä¿è¯MYSQLæœåŠ¡å™¨æ‰“å¼€ï¼›
+        2ã€è¿è¡Œæœ¬æ¬¡æµ‹è¯•ä¾‹ç¨‹
+        3ã€åœ¨è¿›å…¥ç¬¬äºŒä¸ªTEST_CASE_METHODåŽï¼Œå…³é—­æœåŠ¡å™¨
+        æ­¤æ—¶TEST_CASE_METHODä¼šå‡ºçŽ°å¤šä¸ªfailed,æ¯ä¸ªfailedé—´éš”å·®ä¸å¤š3ç§’,éªŒè¯äº†è®¾ç½®è¶…æ—¶
+        æ—¶é—´æ˜¯ç”Ÿæ•ˆçš„
+        4ã€ä¸€å®šè¦æŽ§åˆ¶åœ¨æ‰§è¡Œç¬¬3ä¸ªæ­¥éª¤åŽ10ç§’å†…å†æ¬¡æ‰“å¼€mysqlæœåŠ¡
+        æ­¤æ—¶ç¬¬äºŒä¸ªTEST_CASE_METHODä¼šä»Žfailedè½¬æˆpassedï¼Œç›´åˆ°ç»“æŸï¼ŒéªŒè¯äº†æ–­çº¿é‡è¿žæ˜¯
+        ç”Ÿæ•ˆçš„
 */
-TEST_CASE_METHOD (MYSQLCPP::MySQLDB, "²âÊÔMysqlDB init,connectºÍclose£¬ÎÞÖØÁ¬"){
+TEST_CASE_METHOD (MYSQLCPP::MySQLDB, "æµ‹è¯•MysqlDB init,connectå’Œcloseï¼Œæ— é‡è¿ž", "[init]"){
     
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
     
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
 }
 
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔMysqlDB init,connectºÍclose£¬ÓÐÖØÁ¬") {
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "æµ‹è¯•MysqlDB init,connectå’Œcloseï¼Œæœ‰é‡è¿ž", "[init_and_reconnect]") {
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
     setTimeOut(3);
     setReconnect(true);
 
-    //Á¬½ÓÊý¾Ý¿â£¬ÉèÖÃÖØÁ¬
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    //è¿žæŽ¥æ•°æ®åº“ï¼Œè®¾ç½®é‡è¿ž
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
     
     chrono::seconds value(1);
     int i = 0;
@@ -55,7 +55,7 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔMysqlDB init,connectºÍclose£¬ÓÐÖØÁ¬") {
         i++;
     }
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 }
 

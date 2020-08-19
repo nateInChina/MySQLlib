@@ -1,4 +1,4 @@
-#include "catch.hpp"
+ï»¿#include "catch.hpp"
 #include "DataDB.h"
 #include "MysqlDB.h"
 #include <iostream>
@@ -10,23 +10,23 @@ using namespace MYSQLCPP;
 #define TEST_NUM 10000
 
 /*
-    ²âÊÔ·½·¨£º
-        Ç°Ìá£º±£Ö¤ÄãµÄmysql·þÎñÒª¿ªÆô£¡£¡£¡£¨Ïà¹ØµÄ¿âÃû³Æ¡¢ÓÃ»§Ãû¸ù¾ÝÄã×Ô¼ºÊý¾Ý¿âµÄÉèÖÃÀ´ÐÞ¸ÄÏÂÃæµÄ´úÂë£©
-        ÏÂÃæµÄÀý³Ì°´Ë³Ðò±êºÅ£¬³ÆÎªµÚ1¸öÀý³Ì¡¢µÚ2¸öÀý³Ì£¬ÒÀ´ËÀàÍÆ
-    µÚ1¸öÀý³Ì£¬Ò²Ö»ÓÐ1¸öÀ²£º
-        ²âÊÔÊÂÎñ¿ªÆôÓë²»¿ªÆôµÄÇé¿öÏÂ£¬²åÈëÊý¾ÝµÄÊ±¼ä¶Ô±È£¬¿ÉÒÔ´ÓÊä³ö½á¹ûÖ±¹Û¿´³ö£¬Ð§ÂÊ²îÁË20¶à±¶£¨ÔÚÄãµÄ
-        µçÄÔÉÏ²»Ò»¶¨ÊÇÕâ¸ö½á¹û£¬È¡¾öÄãµçÄÔµÄÓ²¼þÅäÖÃ£¬ÈçÓ²ÅÌ¡¢CPUµÈ£©
+    æµ‹è¯•æ–¹æ³•ï¼š
+        å‰æï¼šä¿è¯ä½ çš„mysqlæœåŠ¡è¦å¼€å¯ï¼ï¼ï¼ï¼ˆç›¸å…³çš„åº“åç§°ã€ç”¨æˆ·åæ ¹æ®ä½ è‡ªå·±æ•°æ®åº“çš„è®¾ç½®æ¥ä¿®æ”¹ä¸‹é¢çš„ä»£ç ï¼‰
+        ä¸‹é¢çš„ä¾‹ç¨‹æŒ‰é¡ºåºæ ‡å·ï¼Œç§°ä¸ºç¬¬1ä¸ªä¾‹ç¨‹ã€ç¬¬2ä¸ªä¾‹ç¨‹ï¼Œä¾æ­¤ç±»æŽ¨
+    ç¬¬1ä¸ªä¾‹ç¨‹ï¼Œä¹Ÿåªæœ‰1ä¸ªå•¦ï¼š
+        æµ‹è¯•äº‹åŠ¡å¼€å¯ä¸Žä¸å¼€å¯çš„æƒ…å†µä¸‹ï¼Œæ’å…¥æ•°æ®çš„æ—¶é—´å¯¹æ¯”ï¼Œå¯ä»¥ä»Žè¾“å‡ºç»“æžœç›´è§‚çœ‹å‡ºï¼Œæ•ˆçŽ‡å·®äº†20å¤šå€ï¼ˆåœ¨ä½ çš„
+        ç”µè„‘ä¸Šä¸ä¸€å®šæ˜¯è¿™ä¸ªç»“æžœï¼Œå–å†³ä½ ç”µè„‘çš„ç¡¬ä»¶é…ç½®ï¼Œå¦‚ç¡¬ç›˜ã€CPUç­‰ï¼‰
 */
 
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "ÊÂÎñ²åÈëÓë·ÇÊÂÎñ²åÈëµÄËÙ¶È¶Ô±È", "[transaction_insert]") {
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "äº‹åŠ¡æ’å…¥ä¸Žéžäº‹åŠ¡æ’å…¥çš„é€Ÿåº¦å¯¹æ¯”", "[transaction_insert]") {
     cout << "[INFO]:begin mysql!!" << endl;
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    CHECK(true == Connect("127.0.0.1", "root", "123456", "lipz31"));
+    CHECK(true == Connect("192.168.2.154", "root", "123456", "lipz31"));
 
-    //±í²»´æÔÚ¾Í½¨±í
+    //è¡¨ä¸å­˜åœ¨å°±å»ºè¡¨
     string sql = "CREATE TABLE IF NOT EXISTS `t_data` ( \
         `id` INT AUTO_INCREMENT, \
         `name` VARCHAR(1024), \
@@ -39,11 +39,11 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "ÊÂÎñ²åÈëÓë·ÇÊÂÎñ²åÈëµÄËÙ¶È¶Ô±È", "[transact
     sql = "truncate t_data;";
     CHECK(true == Query(sql.c_str()));
 
-    ////////////////////// ·ÇÊÂÎñ²åÈëÊý¾Ý ///////////////////////////
-    //¿ªÊ¼¼ÆÊ±
+    ////////////////////// éžäº‹åŠ¡æ’å…¥æ•°æ® ///////////////////////////
+    //å¼€å§‹è®¡æ—¶
     auto start = system_clock::now();
 
-    //²åÈë¶àÌõÊý¾Ý¶Ô±È
+    //æ’å…¥å¤šæ¡æ•°æ®å¯¹æ¯”
     for (unsigned long i = 0; i < TEST_NUM; ++i)
     {
         sql = "INSERT INTO t_data (`name`, `size`) VALUES ('test";
@@ -53,20 +53,20 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "ÊÂÎñ²åÈëÓë·ÇÊÂÎñ²åÈëµÄËÙ¶È¶Ô±È", "[transact
     }
 
     auto end = system_clock::now();
-    //×ª»»ÎªºÁÃë 1000
+    //è½¬æ¢ä¸ºæ¯«ç§’ 1000
     auto dur = duration_cast<milliseconds> (end - start);
-    cout << "ÊÂÎñ²åÈë" << TEST_NUM << "Ç§ÌõÊý¾Ý" << dur.count() / 1000. << "Ãë" << endl;
+    cout << "äº‹åŠ¡æ’å…¥" << TEST_NUM << "åƒæ¡æ•°æ®" << dur.count() / 1000. << "ç§’" << endl;
 
     //////////////////////////////////////////////////////////////////
 
     sql = "truncate t_data;";
     CHECK(true == Query(sql.c_str()));
-    ////////////////////// ÊÂÎñ²åÈëÊý¾Ý //////////////////////////////
+    ////////////////////// äº‹åŠ¡æ’å…¥æ•°æ® //////////////////////////////
 
-    //¿ªÊ¼¼ÆÊ±
+    //å¼€å§‹è®¡æ—¶
     start = system_clock::now();
     StartTransaction();
-    //²åÈë¶àÌõÊý¾Ý¶Ô±È
+    //æ’å…¥å¤šæ¡æ•°æ®å¯¹æ¯”
     for (unsigned long i = 0; i < TEST_NUM; ++i)
     {
         sql = "INSERT INTO t_data (`name`, `size`) VALUES ('test";
@@ -79,13 +79,13 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "ÊÂÎñ²åÈëÓë·ÇÊÂÎñ²åÈëµÄËÙ¶È¶Ô±È", "[transact
     StopTransaction();
     
     end = system_clock::now();
-    //×ª»»ÎªºÁÃë 1000
+    //è½¬æ¢ä¸ºæ¯«ç§’ 1000
     dur = duration_cast<milliseconds> (end - start);
-    cout << "ÊÂÎñ²åÈë" << TEST_NUM << "Ç§ÌõÊý¾Ý" << dur.count() / 1000. << "Ãë" << endl;
+    cout << "äº‹åŠ¡æ’å…¥" << TEST_NUM << "åƒæ¡æ•°æ®" << dur.count() / 1000. << "ç§’" << endl;
 
     //////////////////////////////////////////////////////////////////
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;

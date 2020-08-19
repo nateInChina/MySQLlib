@@ -1,4 +1,4 @@
-#include "catch.hpp"
+ï»¿#include "catch.hpp"
 #include "DataDB.h"
 #include "MysqlDB.h"
 #include <string>
@@ -8,20 +8,20 @@ using namespace std;
 using namespace MYSQLCPP;
 
 /*
-²âÊÔ·½·¨£º
+æµ‹è¯•æ–¹æ³•ï¼š
     
 
    
 */
 
-TEST_CASE_METHOD(MySQLDB, "×Ö·û×ªÂë", "[character_set]") {
+TEST_CASE_METHOD(MySQLDB, "å­—ç¬¦è½¬ç ", "[character_set]") {
     cout << "[INFO]:begin mysql!!" << endl;
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    //Á¬½ÓÊı¾İ¿â
-    CHECK(true == Connect("127.0.0.1", "root", "123456", "lipz31"));
+    //è¿æ¥æ•°æ®åº“
+    CHECK(true == Connect("192.168.2.154", "root", "123456", "lipz31"));
 
     string sql = "CREATE TABLE IF NOT EXISTS `t_CharacterSetTest` (\
             `id` INT AUTO_INCREMENT, \
@@ -35,24 +35,24 @@ TEST_CASE_METHOD(MySQLDB, "×Ö·û×ªÂë", "[character_set]") {
     CHECK(true == Query(sql.c_str()));
 
 #ifdef _WIN32
-    //////////////////// windowsÏÂ²âÊÔ ///////////////////////
-    /* vs2015±¾Éí¶ÔÖĞÎÄ×Ö·ûÊÇgbk±àÂë£¬¿ØÖÆÌ¨µÄÊä³öÊÇGBK±àÂë */
+    //////////////////// windowsä¸‹æµ‹è¯• ///////////////////////
+    /* vs2015æœ¬èº«å¯¹ä¸­æ–‡å­—ç¬¦æ˜¯gbkç¼–ç ï¼Œæ§åˆ¶å°çš„è¾“å‡ºæ˜¯GBKç¼–ç  */
 
-    ///Ğ´ÈëgbkÖĞÎÄÊı¾İ
+    ///å†™å…¥gbkä¸­æ–‡æ•°æ®
     CHECK(true == Query("set names gbk;"));
     {
         DataKeyVal data;
-        DataDB tmp = u8"ÄãÈı¸ç×îË§";
+        DataDB tmp = u8"ä½ ä¸‰å“¥æœ€å¸…";
         string gbk = tmp.Utf8ToGbk(); 
         data["name"] = gbk.c_str();
         Insert(data, "t_CharacterSetTest");
     }
 
-    //¶Á³ögbkÖĞÎÄÊı¾İ
-    //¶Ô±ÈÏÂÃæÈıÖÖÇé¿öÊä³öµÄÇø±ğ
-    //1¡¢Ö±½ÓÊä³ö                      Ô¤²âÖĞµÄ½á¹ûÓ¦¸ÃÊÇ£ºÖĞÎÄ²»ÂÒÂë
-    //2¡¢µ÷ÓÃGbkToUtf8()               Ô¤²âÖĞµÄ½á¹ûÓ¦¸ÃÊÇ£ºÖĞÎÄÂÒÂë
-    //3¡¢ÔÚ2µÄ»ù´¡ÉÏÔÙµ÷ÓÃUft8ToGbk()  Ô¤²âÖĞµÄ½á¹ûÓ¦¸ÃÊÇ£ºÖĞÎÄ²»ÂÒÂë
+    //è¯»å‡ºgbkä¸­æ–‡æ•°æ®
+    //å¯¹æ¯”ä¸‹é¢ä¸‰ç§æƒ…å†µè¾“å‡ºçš„åŒºåˆ«
+    //1ã€ç›´æ¥è¾“å‡º                      é¢„æµ‹ä¸­çš„ç»“æœåº”è¯¥æ˜¯ï¼šä¸­æ–‡ä¸ä¹±ç 
+    //2ã€è°ƒç”¨GbkToUtf8()               é¢„æµ‹ä¸­çš„ç»“æœåº”è¯¥æ˜¯ï¼šä¸­æ–‡ä¹±ç 
+    //3ã€åœ¨2çš„åŸºç¡€ä¸Šå†è°ƒç”¨Uft8ToGbk()  é¢„æµ‹ä¸­çš„ç»“æœåº”è¯¥æ˜¯ï¼šä¸­æ–‡ä¸ä¹±ç 
     
     sql = "SELECT name FROM t_CharacterSetTest where id = 1";
     Query(sql.c_str());
@@ -60,79 +60,120 @@ TEST_CASE_METHOD(MySQLDB, "×Ö·û×ªÂë", "[character_set]") {
     {
         Row read;
         FetchRow(read);
-        //1¡¢Ö±½ÓÊä³ö
+        //1ã€ç›´æ¥è¾“å‡º
         cout << read[0].data << endl;
-        //2¡¢µ÷ÓÃGbkToUtf8()
+        //2ã€è°ƒç”¨GbkToUtf8()
         cout << read[0].GbkToUtf8().c_str() << endl;
-        //3¡¢ÔÚ2µÄ»ù´¡ÉÏÔÙµ÷ÓÃUft8ToGbk()
+        //3ã€åœ¨2çš„åŸºç¡€ä¸Šå†è°ƒç”¨Uft8ToGbk()
         cout << DataDB(read[0].GbkToUtf8().c_str()).Utf8ToGbk().c_str() << endl;
     }
     
 
-    ///Çå³ıÊı¾İ£¬¼ÌĞøÏÂÒ»¸ö²âÊÔ
+    ///æ¸…é™¤æ•°æ®ï¼Œç»§ç»­ä¸‹ä¸€ä¸ªæµ‹è¯•
     sql = "TRUNCATE t_CharacterSetTest;";
     CHECK(true == Query(sql.c_str()));
     
     
-    ///Ğ´Èëutf8ÖĞÎÄÊı¾İ
+    ///å†™å…¥utf8ä¸­æ–‡æ•°æ®
     CHECK(true == Query("set names utf8;"));
     {
         DataKeyVal data;
-        DataDB tmp = u8"ÄãÈı¸çºğË§µÄ";
+        DataDB tmp = u8"ä½ ä¸‰å“¥å¼å¸…çš„";
         data["address"] = tmp;
         Insert(data, "t_CharacterSetTest");
     }
 
-    //¶Á³öutf8ÖĞÎÄÊı¾İ
-    //¶Ô±ÈÏÂÃæÁ½ÖÖÇé¿öÊä³öµÄÇø±ğ
-    //1¡¢µ÷ÓÃUft8ToGbk()    Ô¤²âÖĞµÄ½á¹ûÓ¦¸ÃÊÇ£ºÖĞÎÄ²»ÂÒÂë
-    //2¡¢²»µ÷ÓÃUft8ToGbk()  Ô¤²âÖĞµÄ½á¹ûÓ¦¸ÃÊÇ£ºÖĞÎÄÂÒÂë
+    //è¯»å‡ºutf8ä¸­æ–‡æ•°æ®
+    //å¯¹æ¯”ä¸‹é¢ä¸¤ç§æƒ…å†µè¾“å‡ºçš„åŒºåˆ«
+    //1ã€è°ƒç”¨Uft8ToGbk()    é¢„æµ‹ä¸­çš„ç»“æœåº”è¯¥æ˜¯ï¼šä¸­æ–‡ä¸ä¹±ç 
+    //2ã€ä¸è°ƒç”¨Uft8ToGbk()  é¢„æµ‹ä¸­çš„ç»“æœåº”è¯¥æ˜¯ï¼šä¸­æ–‡ä¹±ç 
     sql = "SELECT address FROM t_CharacterSetTest where id = 1";
     Query(sql.c_str());
     StoreResult();
     {
         Row read;
         FetchRow(read);
-        //1¡¢µ÷ÓÃUtf8ToGbk()
+        //1ã€è°ƒç”¨Utf8ToGbk()
         cout << read[0].Utf8ToGbk().c_str() << endl;
-        //2¡¢²»µ÷ÓÃUft8ToGbk()
+        //2ã€ä¸è°ƒç”¨Uft8ToGbk()
         cout << read[0].data << endl;
     }
     
     //////////////////////////////////////////////////////////
 
 #else
-    //////////////////// linuxÏÂ²âÊÔ /////////////////////////
-    /* gcc¶ÔÖĞÎÄ×Ö·ûÊÇutf8±àÂë£¬Ò»°ã¶¼ÊÇÓÃÀàËÆÓÚxshell
-     * ÕâÖÖ¿ØÖÆÖÕ¶Ë£¬Êä³öµÄ×Ö·û±àÂëÊÇ¿ÉÒÔÉèÖÃµÄ£¬×÷Õß
-     * ÊÇ°ÑÖÕ¶ËÉèÖÃ³ÉUTF8±àÂë
+    //////////////////// linuxä¸‹æµ‹è¯• /////////////////////////
+    /* gccå¯¹ä¸­æ–‡å­—ç¬¦æ˜¯utf8ç¼–ç ï¼Œä¸€èˆ¬éƒ½æ˜¯ç”¨ç±»ä¼¼äºxshell
+     * è¿™ç§æ§åˆ¶ç»ˆç«¯ï¼Œè¾“å‡ºçš„å­—ç¬¦ç¼–ç æ˜¯å¯ä»¥è®¾ç½®çš„ï¼Œä½œè€…
+     * æ˜¯æŠŠç»ˆç«¯è®¾ç½®æˆUTF8ç¼–ç 
      */
 
-    ///Ğ´ÈëgbkÖĞÎÄÊı¾İ
+    ///å†™å…¥gbkä¸­æ–‡æ•°æ®
+    CHECK(true == Query("set names gbk;"));
+    {
+        DataKeyVal data;
+        DataDB tmp = u8"ä½ ä¸‰å“¥æœ€å¸…";
+        string gbk = tmp.Utf8ToGbk();
+        data["name"] = gbk.c_str();
+        Insert(data, "t_CharacterSetTest");
+    }
 
 
+    //è¯»å‡ºgbkä¸­æ–‡æ•°æ®
+    //å¯¹æ¯”ä¸‹é¢ä¸¤ç§æƒ…å†µè¾“å‡ºçš„åŒºåˆ«
+    //1ã€è°ƒç”¨GbkToUtf8()    é¢„æµ‹ä¸­çš„ç»“æœåº”è¯¥æ˜¯ï¼šä¸­æ–‡ä¸ä¹±ç 
+    //2ã€ä¸è°ƒç”¨GbkToUtf8()  é¢„æµ‹ä¸­çš„ç»“æœåº”è¯¥æ˜¯ï¼šä¸­æ–‡ä¹±ç 
+    sql = "SELECT name FROM t_CharacterSetTest where id = 1";
+    Query(sql.c_str());
+    StoreResult();
+    {
+        Row read;
+        FetchRow(read);
+        //1ã€è°ƒç”¨GbkToUtf8()
+        cout << read[0].GbkToUtf8().c_str() << endl;
+        //2ã€ä¸è°ƒç”¨GbkToUtf8()
+        cout << read[0].data << endl;
+    }
 
-    //¶Á³ögbkÖĞÎÄÊı¾İ
-    //¶Ô±ÈÏÂÃæÁ½ÖÖÇé¿öÊä³öµÄÇø±ğ
-    //1¡¢µ÷ÓÃGbkToUtf8()    Ô¤²âÖĞµÄ½á¹ûÓ¦¸ÃÊÇ£ºÖĞÎÄ²»ÂÒÂë
-    //2¡¢²»µ÷ÓÃGbkToUtf8()  Ô¤²âÖĞµÄ½á¹ûÓ¦¸ÃÊÇ£ºÖĞÎÄÂÒÂë
+    ///æ¸…é™¤æ•°æ®ï¼Œç»§ç»­ä¸‹ä¸€ä¸ªæµ‹è¯•
+    sql = "TRUNCATE t_CharacterSetTest;";
+    CHECK(true == Query(sql.c_str()));
 
+    ///å†™å…¥utf8ä¸­æ–‡æ•°æ®
+    CHECK(true == Query("set names utf8;"));
+    {
+        DataKeyVal data;
+        DataDB tmp = u8"ä½ ä¸‰å“¥å¼å¸…çš„";
+        data["address"] = tmp;
+        Insert(data, "t_CharacterSetTest");
+    }
 
+    //è¯»å‡ºutf8ä¸­æ–‡æ•°æ®
+    //å¯¹æ¯”ä¸‹é¢ä¸‰ç§æƒ…å†µè¾“å‡ºçš„åŒºåˆ«
+    //1ã€ç›´æ¥è¾“å‡º                      é¢„æµ‹ä¸­çš„ç»“æœåº”è¯¥æ˜¯ï¼šä¸­æ–‡ä¸ä¹±ç 
+    //2ã€è°ƒç”¨Uft8ToGbk()               é¢„æµ‹ä¸­çš„ç»“æœåº”è¯¥æ˜¯ï¼šä¸­æ–‡ä¹±ç 
+    //3ã€åœ¨2çš„åŸºç¡€ä¸Šå†è°ƒç”¨GbkToUtf8()  é¢„æµ‹ä¸­çš„ç»“æœåº”è¯¥æ˜¯ï¼šä¸­æ–‡ä¸ä¹±ç 
+    sql = "SELECT address FROM t_CharacterSetTest where id = 1";
+    Query(sql.c_str());
+    StoreResult();
+    {
+        Row read;
+        FetchRow(read);
+        //1ã€ç›´æ¥è¾“å‡º   
+        cout << read[0].data << endl;
+        //2ã€è°ƒç”¨Uft8ToGbk()
+        cout << read[0].Utf8ToGbk().c_str() << endl;
+        //3ã€åœ¨2çš„åŸºç¡€ä¸Šå†è°ƒç”¨GbkToUtf8()
+        cout << DataDB(read[0].Utf8ToGbk().c_str()).GbkToUtf8().c_str() << endl;
 
-    ///Ğ´Èëutf8ÖĞÎÄÊı¾İ
-
-    //¶Á³öutf8ÖĞÎÄÊı¾İ
-    //¶Ô±ÈÏÂÃæÈıÖÖÇé¿öÊä³öµÄÇø±ğ
-    //1¡¢Ö±½ÓÊä³ö                      Ô¤²âÖĞµÄ½á¹ûÓ¦¸ÃÊÇ£ºÖĞÎÄ²»ÂÒÂë
-    //2¡¢µ÷ÓÃUft8ToGbk()               Ô¤²âÖĞµÄ½á¹ûÓ¦¸ÃÊÇ£ºÖĞÎÄÂÒÂë
-    //3¡¢ÔÚ2µÄ»ù´¡ÉÏÔÙµ÷ÓÃGbkToUtf8()  Ô¤²âÖĞµÄ½á¹ûÓ¦¸ÃÊÇ£ºÖĞÎÄ²»ÂÒÂë
-
+        
+    }
 
 
     //////////////////////////////////////////////////////////
 #endif //_WIN32
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿æ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;

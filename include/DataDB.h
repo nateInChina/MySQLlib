@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #ifdef _WIN32
 #ifdef MYSQLLIB_EXPORTS
-//¶¯Ì¬Á´½Ó¿âÏîÄ¿µ÷ÓÃ
+//åŠ¨æ€é“¾æ¥åº“é¡¹ç›®è°ƒç”¨
 #define MYSQLAPI  __declspec(dllexport)
 #else
-//Ö´ĞĞ³ÌĞòµ÷ÓÃ
+//æ‰§è¡Œç¨‹åºè°ƒç”¨
 #define MYSQLAPI  __declspec(dllimport)
 #endif
 #else
@@ -97,8 +97,8 @@ namespace MYSQLCPP
     struct MYSQLAPI DataDB
     {
         DataDB(){}
-        DataDB(const char *val); //¶ÔÓ¦µÄÁĞÊı¾İÀàĞÍÎª£ºDBMYSQL_TYPE_STRING
-        DataDB(int *val);         //¶ÔÓ¦µÄÁĞÊı¾İÀàĞÍÀà£ºDBMYSQL_TYPE_LONG
+        DataDB(const char *val); //å¯¹åº”çš„åˆ—æ•°æ®ç±»å‹ä¸ºï¼šDBMYSQL_TYPE_STRING
+        DataDB(int *val);         //å¯¹åº”çš„åˆ—æ•°æ®ç±»å‹ç±»ï¼šDBMYSQL_TYPE_LONG
         bool LoadFile(const char *path);
         bool Free();
 

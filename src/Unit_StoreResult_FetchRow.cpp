@@ -1,4 +1,4 @@
-#include "catch.hpp"
+ï»¿#include "catch.hpp"
 #include "DataDB.h"
 #include "MysqlDB.h"
 #include <string>
@@ -8,43 +8,43 @@
 using namespace std;
 using namespace MYSQLCPP;
 /*
-    ²âÊÔ·½·¨£º
-        Ç°Ìá£ºÊ×´ÎÒª±£Ö¤MYSQL·þÎñÆ÷´ò¿ª£¡£¡£¨Ïà¹ØµÄ¿â¡¢ÓÃ»§Ãû°´Äã×Ô¼ºµÄ°²×°µÄÊý¾Ý¿âÀ´ÐÞ¸ÄÏÂÃæµÄ´úÂë£©
-        ÏÂÃæµÄÀý³Ì°´Ë³Ðò±êºÅ£¬³ÆÎªµÚ1¸öÀý³Ì¡¢µÚ2¸öÀý³Ì£¬ÒÀ´ËÀàÍÆ
+    æµ‹è¯•æ–¹æ³•ï¼š
+        å‰æï¼šé¦–æ¬¡è¦ä¿è¯MYSQLæœåŠ¡å™¨æ‰“å¼€ï¼ï¼ï¼ˆç›¸å…³çš„åº“ã€ç”¨æˆ·åæŒ‰ä½ è‡ªå·±çš„å®‰è£…çš„æ•°æ®åº“æ¥ä¿®æ”¹ä¸‹é¢çš„ä»£ç ï¼‰
+        ä¸‹é¢çš„ä¾‹ç¨‹æŒ‰é¡ºåºæ ‡å·ï¼Œç§°ä¸ºç¬¬1ä¸ªä¾‹ç¨‹ã€ç¬¬2ä¸ªä¾‹ç¨‹ï¼Œä¾æ­¤ç±»æŽ¨
     
-    µÚ1¸öÀý³Ì£º
-        ²âÊÔÁËStoreResult½Ó¿Ú£¬²âÊÔµÄÇé¾°ÓÐ£º
-        ·ÇSELECTÓï¾äÊÇ·ñÄÜµ÷ÓÃ³É¹¦
-        SELECTÓï¾äµ«Ã»·ûºÏµÄÊý¾ÝÊ±ÄÜ·ñµ÷ÓÃ³É¹¦£»
-        SELECTÓï¾äÇÒÓÐ·ûºÏµÄÊý¾ÝÊ±ÄÜ·ñµ÷ÓÃ³É¹¦£»
-        ¿´½á¹ûÊÇ·ñÏÔÊ¾PASS¼´¿É¡£
-    µÚ2¸öÀý³Ì£º
-        ºÍµÚ1¸öÀý³ÌÒ»Ñù£¬Ö»ÊÇUseResultÈ¡»Ø½á¹û¼¯Ê±£¬²»»áÂíÉÏ°ÑÊý¾ÝÄÃ»ØÀ´£¬¶øÊÇ·µ»Ø½á¹û¶øÒÑ£¬
-        Ö®ºóÐèÒªÒ»ÌõÒ»ÌõµØFetchRow/FetchRows»ØÀ´£»Õâ¸úStoreResultÊÇ²»Ò»ÑùµÄ£¬ËäÈ»StoreResult
-        ×îºóÒ²ÐèÒªÒ»ÌõÒ»ÌõFetch»ØÀ´£¬µ«ÊÇËü·µ»ØµÄ½á¹û¼¯±¾Éí¾Í´Ó·þÎñ¶Ë°ÑËùÓÐÊý¾ÝÈ¡»ØÀ´ÁË£¬¶ø
-        Ê¹ÓÃUseResultºóµÄÃ¿Ò»ÌõFetch·´¶øÊÇÒª´Ó·þÎñÆ÷¶ËÈ¡»ØÀ´¡£
-    µÚ3¸öÀý³Ì£º
-        ²âÊÔFetchRow½Ó¿Ú£¬·Ö¡°ÓÐ½á¹û¼¯£¬µ«Ã»ÓÐÊý¾Ý¡±ºÍ¡°ÓÐ½á¹û¼¯£¬ÇÒÓÐÊý¾Ý£¬²¢È¡»ØÊý¾Ý¡±£»
-        ÔÚµÚ¶þ¸öÇé¾°Àï£¬Ä£Äâ²åÈëÁË10ÌõÊý¾Ý£¬½«È¡»ØµÄÊý¾Ý¸úÕâ10ÌõµÄµÚÒ»Ìõ×ö±È×÷¡£
-    µÚ4¸öÀý³Ì£º
-        ²âÊÔFetchRows½Ó¿Ú,FetchRowsÊÇ¿ÉÒÔÒ»´ÎÐÔÈ¡»ØËùÓÐÐÐµÄ£¬ËùÒÔ·ÖÒÔÏÂ¼¸ÖÖÇé¾°²âÊÔ£º
-            1¡¢ÓÐ½á¹û¼¯£¬µ«Ã»Êý¾Ý(Ã»ÓÐ·ûºÏÌõ¼þµÄÊý¾Ý)£¬·µ»ØµÄÊý¾ÝÊÇ¿ÕµÄ£»
-            2¡¢ÓÐ½á¹û¼¯£¬ÇÒÖ»ÓÐÒ»ÌõÊý¾Ý£¬È¡»ØÕâÌõÊý¾Ý£»
-                Ä£Äâ²åÈëÁËÒ»ÌõÊý¾Ý£¬²¢½«È¡»ØµÄÊý¾Ý¸úÕâÌõÊý¾Ý×÷¶Ô±È¡£
-            3¡¢ÓÐ½á¹û¼¯£¬ÇÒÓÐ¶àÌõÊý¾Ý£¬È¡»ØÈ«²¿Êý¾Ý£»
-                Ä£Äâ²åÈëÁË¶àÌõÊý¾Ý£¬²¢½«È¡»ØµÄÊý¾Ý¸úÈ¡»ØµÄÊý¾Ý×÷¶Ô±È¡£
+    ç¬¬1ä¸ªä¾‹ç¨‹ï¼š
+        æµ‹è¯•äº†StoreResultæŽ¥å£ï¼Œæµ‹è¯•çš„æƒ…æ™¯æœ‰ï¼š
+        éžSELECTè¯­å¥æ˜¯å¦èƒ½è°ƒç”¨æˆåŠŸ
+        SELECTè¯­å¥ä½†æ²¡ç¬¦åˆçš„æ•°æ®æ—¶èƒ½å¦è°ƒç”¨æˆåŠŸï¼›
+        SELECTè¯­å¥ä¸”æœ‰ç¬¦åˆçš„æ•°æ®æ—¶èƒ½å¦è°ƒç”¨æˆåŠŸï¼›
+        çœ‹ç»“æžœæ˜¯å¦æ˜¾ç¤ºPASSå³å¯ã€‚
+    ç¬¬2ä¸ªä¾‹ç¨‹ï¼š
+        å’Œç¬¬1ä¸ªä¾‹ç¨‹ä¸€æ ·ï¼Œåªæ˜¯UseResultå–å›žç»“æžœé›†æ—¶ï¼Œä¸ä¼šé©¬ä¸ŠæŠŠæ•°æ®æ‹¿å›žæ¥ï¼Œè€Œæ˜¯è¿”å›žç»“æžœè€Œå·²ï¼Œ
+        ä¹‹åŽéœ€è¦ä¸€æ¡ä¸€æ¡åœ°FetchRow/FetchRowså›žæ¥ï¼›è¿™è·ŸStoreResultæ˜¯ä¸ä¸€æ ·çš„ï¼Œè™½ç„¶StoreResult
+        æœ€åŽä¹Ÿéœ€è¦ä¸€æ¡ä¸€æ¡Fetchå›žæ¥ï¼Œä½†æ˜¯å®ƒè¿”å›žçš„ç»“æžœé›†æœ¬èº«å°±ä»ŽæœåŠ¡ç«¯æŠŠæ‰€æœ‰æ•°æ®å–å›žæ¥äº†ï¼Œè€Œ
+        ä½¿ç”¨UseResultåŽçš„æ¯ä¸€æ¡Fetchåè€Œæ˜¯è¦ä»ŽæœåŠ¡å™¨ç«¯å–å›žæ¥ã€‚
+    ç¬¬3ä¸ªä¾‹ç¨‹ï¼š
+        æµ‹è¯•FetchRowæŽ¥å£ï¼Œåˆ†â€œæœ‰ç»“æžœé›†ï¼Œä½†æ²¡æœ‰æ•°æ®â€å’Œâ€œæœ‰ç»“æžœé›†ï¼Œä¸”æœ‰æ•°æ®ï¼Œå¹¶å–å›žæ•°æ®â€ï¼›
+        åœ¨ç¬¬äºŒä¸ªæƒ…æ™¯é‡Œï¼Œæ¨¡æ‹Ÿæ’å…¥äº†10æ¡æ•°æ®ï¼Œå°†å–å›žçš„æ•°æ®è·Ÿè¿™10æ¡çš„ç¬¬ä¸€æ¡åšæ¯”ä½œã€‚
+    ç¬¬4ä¸ªä¾‹ç¨‹ï¼š
+        æµ‹è¯•FetchRowsæŽ¥å£,FetchRowsæ˜¯å¯ä»¥ä¸€æ¬¡æ€§å–å›žæ‰€æœ‰è¡Œçš„ï¼Œæ‰€ä»¥åˆ†ä»¥ä¸‹å‡ ç§æƒ…æ™¯æµ‹è¯•ï¼š
+            1ã€æœ‰ç»“æžœé›†ï¼Œä½†æ²¡æ•°æ®(æ²¡æœ‰ç¬¦åˆæ¡ä»¶çš„æ•°æ®)ï¼Œè¿”å›žçš„æ•°æ®æ˜¯ç©ºçš„ï¼›
+            2ã€æœ‰ç»“æžœé›†ï¼Œä¸”åªæœ‰ä¸€æ¡æ•°æ®ï¼Œå–å›žè¿™æ¡æ•°æ®ï¼›
+                æ¨¡æ‹Ÿæ’å…¥äº†ä¸€æ¡æ•°æ®ï¼Œå¹¶å°†å–å›žçš„æ•°æ®è·Ÿè¿™æ¡æ•°æ®ä½œå¯¹æ¯”ã€‚
+            3ã€æœ‰ç»“æžœé›†ï¼Œä¸”æœ‰å¤šæ¡æ•°æ®ï¼Œå–å›žå…¨éƒ¨æ•°æ®ï¼›
+                æ¨¡æ‹Ÿæ’å…¥äº†å¤šæ¡æ•°æ®ï¼Œå¹¶å°†å–å›žçš„æ•°æ®è·Ÿå–å›žçš„æ•°æ®ä½œå¯¹æ¯”ã€‚
         
 */
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔÈ¡»Ø½á¹û¼¯½Ó¿ÚStoreResult", "[StoreResult]") {   
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "æµ‹è¯•å–å›žç»“æžœé›†æŽ¥å£StoreResult", "[StoreResult]") {   
     cout << "[INFO]:begin mysql!!" << endl;
     
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    //Á¬½ÓÊý¾Ý¿â
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    //è¿žæŽ¥æ•°æ®åº“
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
 
-    //½¨±í
+    //å»ºè¡¨
     string sql = "CREATE TABLE IF NOT EXISTS `t_data`( \
 		`id` int AUTO_INCREMENT, \
 		`name` varchar(1024), \
@@ -56,16 +56,16 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔÈ¡»Ø½á¹û¼¯½Ó¿ÚStoreResult", "[StoreResu
     REQUIRE(true == Query(sql.c_str()));
 
     //
-    SECTION("·ÇSELECTÓï¾ä")
+    SECTION("éžSELECTè¯­å¥")
     {
-        //Çå±í
+        //æ¸…è¡¨
         sql = "truncate t_data";
         REQUIRE(true == Query(sql.c_str()));
         REQUIRE(1 == StoreResult()); 
     }
     
-    //±íÀïÃ»Êý¾ÝÊ± SELECT
-    SECTION("SELECTÓï¾ä£¬ÎÞÊý¾Ý")
+    //è¡¨é‡Œæ²¡æ•°æ®æ—¶ SELECT
+    SECTION("SELECTè¯­å¥ï¼Œæ— æ•°æ®")
     {
         sql = "SELECT count(*) from t_data;";
         REQUIRE(true == Query(sql.c_str()));
@@ -73,10 +73,10 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔÈ¡»Ø½á¹û¼¯½Ó¿ÚStoreResult", "[StoreResu
     }
 
 
-    //±íÀïÓÐÊý¾ÝÊ± SELECT
-    SECTION("SELECTÓï¾ä£¬ÓÐÊý¾Ý")
+    //è¡¨é‡Œæœ‰æ•°æ®æ—¶ SELECT
+    SECTION("SELECTè¯­å¥ï¼Œæœ‰æ•°æ®")
     {
-        //²åÈë10ÌõÊý¾Ý
+        //æ’å…¥10æ¡æ•°æ®
         for (int i = 0; i < 10; ++i)
         {
             sql = "INSERT INTO t_data (`name`, `size`) VALUES ('test";
@@ -85,7 +85,7 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔÈ¡»Ø½á¹û¼¯½Ó¿ÚStoreResult", "[StoreResu
 
             if (!Query(sql.c_str()))
             {
-                cout << "[ERR]:Catch2ÖÐ²åÈëÊý¾Ý³ö´í£¡£¡[" << __FILE__ << "," << __LINE__ << "]" << endl;
+                cout << "[ERR]:Catch2ä¸­æ’å…¥æ•°æ®å‡ºé”™ï¼ï¼[" << __FILE__ << "," << __LINE__ << "]" << endl;
             }
         }
 
@@ -94,22 +94,22 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔÈ¡»Ø½á¹û¼¯½Ó¿ÚStoreResult", "[StoreResu
         REQUIRE(0 == StoreResult());
     }
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl; 
 }
 
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔÈ¡»Ø½á¹û¼¯½Ó¿ÚUseResult", "[UseResult]") {
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "æµ‹è¯•å–å›žç»“æžœé›†æŽ¥å£UseResult", "[UseResult]") {
     cout << "[INFO]:begin mysql!!" << endl;
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    //Á¬½ÓÊý¾Ý¿â
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    //è¿žæŽ¥æ•°æ®åº“
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
 
-    //½¨±í
+    //å»ºè¡¨
     string sql = "CREATE TABLE IF NOT EXISTS `t_data`( \
 		`id` int AUTO_INCREMENT, \
 		`name` varchar(1024), \
@@ -121,16 +121,16 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔÈ¡»Ø½á¹û¼¯½Ó¿ÚUseResult", "[UseResult]"
     REQUIRE(true == Query(sql.c_str()));
 
     //
-    SECTION("·ÇSELECTÓï¾ä")
+    SECTION("éžSELECTè¯­å¥")
     {
-        //Çå±í
+        //æ¸…è¡¨
         sql = "truncate t_data";
         REQUIRE(true == Query(sql.c_str()));
         REQUIRE(1 == UseResult());
     }
 
-    //±íÀïÃ»Êý¾ÝÊ± SELECT
-    SECTION("SELECTÓï¾ä£¬ÎÞÊý¾Ý")
+    //è¡¨é‡Œæ²¡æ•°æ®æ—¶ SELECT
+    SECTION("SELECTè¯­å¥ï¼Œæ— æ•°æ®")
     {
         sql = "SELECT count(*) from t_data;";
         REQUIRE(true == Query(sql.c_str()));
@@ -138,10 +138,10 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔÈ¡»Ø½á¹û¼¯½Ó¿ÚUseResult", "[UseResult]"
     }
 
 
-    //±íÀïÓÐÊý¾ÝÊ± SELECT
-    SECTION("SELECTÓï¾ä£¬ÓÐÊý¾Ý")
+    //è¡¨é‡Œæœ‰æ•°æ®æ—¶ SELECT
+    SECTION("SELECTè¯­å¥ï¼Œæœ‰æ•°æ®")
     {
-        //²åÈë10ÌõÊý¾Ý
+        //æ’å…¥10æ¡æ•°æ®
         for (int i = 0; i < 10; ++i)
         {
             sql = "INSERT INTO t_data (`name`, `size`) VALUES ('test";
@@ -150,7 +150,7 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔÈ¡»Ø½á¹û¼¯½Ó¿ÚUseResult", "[UseResult]"
 
             if (!Query(sql.c_str()))
             {
-                cout << "[ERR]:Catch2ÖÐ²åÈëÊý¾Ý³ö´í£¡£¡[" << __FILE__ << "," << __LINE__ << "]" << endl;
+                cout << "[ERR]:Catch2ä¸­æ’å…¥æ•°æ®å‡ºé”™ï¼ï¼[" << __FILE__ << "," << __LINE__ << "]" << endl;
             }
         }
 
@@ -159,22 +159,22 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "²âÊÔÈ¡»Ø½á¹û¼¯½Ó¿ÚUseResult", "[UseResult]"
         REQUIRE(0 == UseResult());
     }
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;
 }
 
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØÒ»ÐÐÊý¾Ý", "[FetchRow]") {
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "å–å›žä¸€è¡Œæ•°æ®", "[FetchRow]") {
     cout << "[INFO]:begin mysql!!" << endl;
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
 
-    //Á¬½ÓÊý¾Ý¿â
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    //è¿žæŽ¥æ•°æ®åº“
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
 
-    //½¨±í
+    //å»ºè¡¨
     string sql = "CREATE TABLE IF NOT EXISTS `t_data`( \
 		`id` int AUTO_INCREMENT, \
 		`name` varchar(1024), \
@@ -184,12 +184,12 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØÒ»ÐÐÊý¾Ý", "[FetchRow]") {
 	)ENGINE=InnoDB;";
     Query(sql.c_str());
 
-    //Çå±í
+    //æ¸…è¡¨
     sql = "truncate t_data";
     Query(sql.c_str());
 
-    //ÓÐ½á¹û¼¯£¬µ«Ã»Êý¾Ý(Ã»ÓÐ·ûºÏÌõ¼þµÄÊý¾Ý)
-    SECTION("ÓÐ½á¹û¼¯£¬µ«Ã»Êý¾Ý")
+    //æœ‰ç»“æžœé›†ï¼Œä½†æ²¡æ•°æ®(æ²¡æœ‰ç¬¦åˆæ¡ä»¶çš„æ•°æ®)
+    SECTION("æœ‰ç»“æžœé›†ï¼Œä½†æ²¡æ•°æ®")
     {
         //id name data(null) size
         sql = "SELECT id,name,size from t_data;";
@@ -200,10 +200,10 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØÒ»ÐÐÊý¾Ý", "[FetchRow]") {
         CHECK(false == FetchRow(getData));
     }
 
-    //ÓÐ½á¹û¼¯£¬Ò²ÓÐÊý¾Ý£¬²¢ÇÒÈ¡»ØÒ»ÐÐÊý¾Ý
-    SECTION("ÓÐ½á¹û¼¯£¬Ò²ÓÐÊý¾Ý£¬²¢È¡»ØÒ»Ìõ")
+    //æœ‰ç»“æžœé›†ï¼Œä¹Ÿæœ‰æ•°æ®ï¼Œå¹¶ä¸”å–å›žä¸€è¡Œæ•°æ®
+    SECTION("æœ‰ç»“æžœé›†ï¼Œä¹Ÿæœ‰æ•°æ®ï¼Œå¹¶å–å›žä¸€æ¡")
     {
-        //²åÈë10ÌõÊý¾Ý
+        //æ’å…¥10æ¡æ•°æ®
         for (int i = 0; i < 10; ++i)
         {
             sql = "INSERT INTO t_data (`name`, `size`) VALUES ('test";
@@ -212,7 +212,7 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØÒ»ÐÐÊý¾Ý", "[FetchRow]") {
 
             if (!Query(sql.c_str()))
             {
-                cout << "[ERR]:Catch2ÖÐ²åÈëÊý¾Ý³ö´í£¡£¡[" << __FILE__ << "," << __LINE__ << "]" << endl;
+                cout << "[ERR]:Catch2ä¸­æ’å…¥æ•°æ®å‡ºé”™ï¼ï¼[" << __FILE__ << "," << __LINE__ << "]" << endl;
             }
         }
 
@@ -236,10 +236,10 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØÒ»ÐÐÊý¾Ý", "[FetchRow]") {
 
         FreeResult();
 
-        //DataDBÒªÖØÔØÔËËã·û== ²ÅÄÜ½øÐÐ±È½Ï
+        //DataDBè¦é‡è½½è¿ç®—ç¬¦== æ‰èƒ½è¿›è¡Œæ¯”è¾ƒ
         CHECK(Cmp == getData);
 
-        //Ò²¿ÉÒÔÊ¹ÓÃÏÂÃæÖðÌõ±È½Ï£¬¾Í¿ÉÒÔ¿´µ½Ã¿¸ö×Ö¶ÎµÄÄÚÈÝÁË
+        //ä¹Ÿå¯ä»¥ä½¿ç”¨ä¸‹é¢é€æ¡æ¯”è¾ƒï¼Œå°±å¯ä»¥çœ‹åˆ°æ¯ä¸ªå­—æ®µçš„å†…å®¹äº†
         //for (int i = 0; i < Cmp.size(); ++i)
         //{
         //    CHECK(Cmp[i] == getData[i]);
@@ -249,22 +249,22 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØÒ»ÐÐÊý¾Ý", "[FetchRow]") {
         
     }
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;
 }
 
-TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØËùÓÐÊý¾Ý", "[FetchRows]") {
+TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "å–å›žæ‰€æœ‰æ•°æ®", "[FetchRows]") {
     cout << "[INFO]:begin mysql!!\n" << endl;
 
-    //³õÊ¼»¯
+    //åˆå§‹åŒ–
     Init();
     
-    //Á¬½ÓÊý¾Ý¿â
-    REQUIRE(true == Connect("127.0.0.1", "root", "123456", "lipz31", 3306, 0));
+    //è¿žæŽ¥æ•°æ®åº“
+    REQUIRE(true == Connect("192.168.2.154", "root", "123456", "lipz31", 3306, 0));
 
-    //½¨±í
+    //å»ºè¡¨
     string sql = "CREATE TABLE IF NOT EXISTS `t_data`( \
 		`id` int AUTO_INCREMENT, \
 		`name` varchar(1024), \
@@ -274,12 +274,12 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØËùÓÐÊý¾Ý", "[FetchRows]") {
 	)ENGINE=InnoDB;";
     Query(sql.c_str());
 
-    //Çå±í
+    //æ¸…è¡¨
     sql = "truncate t_data";
     Query(sql.c_str());
 
-    //ÓÐ½á¹û¼¯£¬µ«Ã»Êý¾Ý(Ã»ÓÐ·ûºÏÌõ¼þµÄÊý¾Ý)
-    SECTION("ÓÐ½á¹û¼¯£¬µ«Ã»Êý¾Ý")
+    //æœ‰ç»“æžœé›†ï¼Œä½†æ²¡æ•°æ®(æ²¡æœ‰ç¬¦åˆæ¡ä»¶çš„æ•°æ®)
+    SECTION("æœ‰ç»“æžœé›†ï¼Œä½†æ²¡æ•°æ®")
     {
         //id name data(null) size
         sql = "SELECT id,name,size from t_data;";
@@ -293,11 +293,11 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØËùÓÐÊý¾Ý", "[FetchRows]") {
 
     }
 
-    //ÓÐ½á¹û¼¯£¬µ«Ö»ÓÐÒ»ÌõÊý¾Ý£¬²¢ÇÒÈ¡»ØÒ»ÐÐÊý¾Ý
-    SECTION("ÓÐ½á¹û¼¯£¬µ«Ö»ÓÐÒ»ÌõÊý¾Ý£¬¶Á»Ø")
+    //æœ‰ç»“æžœé›†ï¼Œä½†åªæœ‰ä¸€æ¡æ•°æ®ï¼Œå¹¶ä¸”å–å›žä¸€è¡Œæ•°æ®
+    SECTION("æœ‰ç»“æžœé›†ï¼Œä½†åªæœ‰ä¸€æ¡æ•°æ®ï¼Œè¯»å›ž")
     {
         //id name data(null) size
-        //²åÈëÒ»ÌõÊý¾Ý
+        //æ’å…¥ä¸€æ¡æ•°æ®
         sql = "INSERT INTO `t_data` (`name`, `size`) VALUES ('lipz31', 10086); ";
         Query(sql.c_str());
 
@@ -326,15 +326,15 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØËùÓÐÊý¾Ý", "[FetchRows]") {
         CHECK(Cmp == getData);
     }
 
-    //ÓÐ½á¹û¼¯£¬Ò²ÓÐ¶àÌõÊý¾Ý£¬È«²¿¶Á»Ø
-    SECTION("ÓÐ½á¹û¼¯£¬Ò²ÓÐÊý¾Ý£¬È«²¿¶Á»Ø")
+    //æœ‰ç»“æžœé›†ï¼Œä¹Ÿæœ‰å¤šæ¡æ•°æ®ï¼Œå…¨éƒ¨è¯»å›ž
+    SECTION("æœ‰ç»“æžœé›†ï¼Œä¹Ÿæœ‰æ•°æ®ï¼Œå…¨éƒ¨è¯»å›ž")
     {
-        //Çå±í
+        //æ¸…è¡¨
         sql = "truncate t_data";
         Query(sql.c_str());
 
         //id name data(null) size
-        //²åÈë10ÌõÊý¾Ý
+        //æ’å…¥10æ¡æ•°æ®
         for (int i = 0; i < 10; ++i)
         {
             sql = "INSERT INTO t_data (`name`, `size`) VALUES ('test";
@@ -343,7 +343,7 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØËùÓÐÊý¾Ý", "[FetchRows]") {
 
             if (!Query(sql.c_str()))
             {
-                cout << "[ERR]:Catch2ÖÐ²åÈëÊý¾Ý³ö´í£¡£¡[" << __FILE__ << "," << __LINE__ << "]" << endl;
+                cout << "[ERR]:Catch2ä¸­æ’å…¥æ•°æ®å‡ºé”™ï¼ï¼[" << __FILE__ << "," << __LINE__ << "]" << endl;
             }
         }
 
@@ -399,7 +399,7 @@ TEST_CASE_METHOD(MYSQLCPP::MySQLDB, "È¡»ØËùÓÐÊý¾Ý", "[FetchRows]") {
         }
     }
 
-    //¹Ø±ÕÁ¬½Ó
+    //å…³é—­è¿žæŽ¥
     Close();
 
     cout << "[INFO]:close mysql!!\n" << endl;

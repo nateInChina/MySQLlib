@@ -1,26 +1,26 @@
-#pragma once
+ï»¿#pragma once
 #include  <vector>
 #include  "DataDB.h"
 
 struct MYSQL;
 struct MYSQL_RES;
 namespace MYSQLCPP {
-    //¶àĞĞÊı¾İ
+    //å¤šè¡Œæ•°æ®
     typedef std::vector<std::vector<DataDB>> Rows;
     
-    //Ò»ĞĞÊı¾İ
+    //ä¸€è¡Œæ•°æ®
     typedef std::vector<DataDB> Row;
 
     class MYSQLAPI MySQLDB
     {
     public:
-        //³õÊ¼»¯Mysql API(²»¿¼ÂÇÏß³Ì°²È«)
+        //åˆå§‹åŒ–Mysql API(ä¸è€ƒè™‘çº¿ç¨‹å®‰å…¨)
         bool Init();
 
-        //ÇåÀíÕ¼ÓÃµÄËùÓĞ×ÊÔ´(²»¿¼ÂÇÏß³Ì°²È«)
+        //æ¸…ç†å ç”¨çš„æ‰€æœ‰èµ„æº(ä¸è€ƒè™‘çº¿ç¨‹å®‰å…¨)
         bool Close();
         
-        //Êı¾İÁ¬½Ó(²»¿¼ÂÇÏß³Ì°²È«)
+        //æ•°æ®è¿æ¥(ä¸è€ƒè™‘çº¿ç¨‹å®‰å…¨)
         bool Connect(const char *host,
                      const char *user, 
                      const char *passwd,
@@ -28,31 +28,31 @@ namespace MYSQLCPP {
                      unsigned int port = 3306,
                      unsigned long clientflag = 0);
 
-        //MySQL²ÎÊıÉèconst char *unix_socket,¶¨£¬ÔÚConnectÖ®Ç°µ÷ÓÃ
+        //MySQLå‚æ•°è®¾const char *unix_socket,å®šï¼Œåœ¨Connectä¹‹å‰è°ƒç”¨
         bool Options(enum DBMYSQL_OPTION option, const void *arg);
 
-        //ÉèÖÃ³¬Ê±Ê±¼ä
+        //è®¾ç½®è¶…æ—¶æ—¶é—´
         bool setTimeOut(unsigned int nTimeOut);
 
-        //ÉèÖÃ¶ÏÏßÖØÁ¬
+        //è®¾ç½®æ–­çº¿é‡è¿
         bool setReconnect(bool isre);
 
-        //Ö´ĞĞSQLÓï¾ä½Ó¿Ú
+        //æ‰§è¡ŒSQLè¯­å¥æ¥å£
         bool Query(const char* strSQL);
 
-        //ÊÍ·Å½á¹û¼¯ËùÕ¼¿Õ¼ä
+        //é‡Šæ”¾ç»“æœé›†æ‰€å ç©ºé—´
         bool FreeResult();
 
-        //È¡½á¹û¼¯
+        //å–ç»“æœé›†
         int UseResult();
 
-        //È¡½á¹û¼¯
+        //å–ç»“æœé›†
         int StoreResult();
 
-        //È¡Ò»ĞĞ½á¹û
+        //å–ä¸€è¡Œç»“æœ
         bool FetchRow(Row &vRow);
 
-        //¼«¼ò½Ó¿Ú£¬Ö±½ÓÈ¡»Ø½á¹û
+        //æç®€æ¥å£ï¼Œç›´æ¥å–å›ç»“æœ
         Rows FetchRows();
         
         std::string GetInsertSql(DataKeyVal val, std::string TableName);
@@ -76,8 +76,8 @@ namespace MYSQLCPP {
 
     protected:
         
-        MYSQL *mysql = nullptr; //C++11ºóÖ§³Ö
-        MYSQL_RES *result = nullptr; //C++11ºóÖ§³Ö
+        MYSQL *mysql = nullptr; //C++11åæ”¯æŒ
+        MYSQL_RES *result = nullptr; //C++11åæ”¯æŒ
     };
 
 }
